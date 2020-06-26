@@ -18,3 +18,6 @@ def charts(request):
 
 def tables(request):
     return render(request, 'board/tables.html')
+
+def notice(request):
+    return render(request, 'board/notice.html')
