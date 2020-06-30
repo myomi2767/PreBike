@@ -157,15 +157,25 @@ def comment_create(request, notice_pk):
         return redirect('board:login')
 
 def search(request):
-    selectedgu = request.GET.get('selected')
-    print("*"*30)
-    print(selectedgu)
-    print("*"*30)
-    rentdong = Address.objects.filter(rentGu=selectedgu).distinct()
-    print("*"*30)
-    print(rentdong)
-    print("*"*30)
+    selectedgu = request.GET.get('rentGu')
+    selecteddong = request.GET.get('rentDong')
+
+    rentgu = Address.objects.filter(rentGu=selectedgu)
+    rentdong = []
+    for data in rentgu:
+        rentdong.append(data.rentDong)
+    # 중복제거
+    rentdong = set(rentdong)    
+ 
+    stationname = []
+    if selecteddong != None :
+        dong = Address.objects.filter(rentGu=selectedgu, rentDong=selecteddong)
+        print(dong)
+        for stationdata in dong:
+            stationname.append(stationdata.stationName)
+
     context = {
-        'rentdong' : rentdong
+        'rentdong' : list(rentdong),
+        'stationname' : stationname
     }
     return JsonResponse(context)

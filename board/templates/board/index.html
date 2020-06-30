@@ -81,17 +81,15 @@
                                 <select id="rent_Dong" name="Dong_list" value="동">
                                     <option selected="selected">-----동 선택-----</option>
                                     {% for seldong in rentdong %}
-                                        <option value="selecteddong">{{seldong}}</option>
+                                        <option value="{{seldong}}">{{seldong}}</option>
                                     {% endfor %}
                                 </select>
                             </div>
                             <div class="table-responsive">
-                                <table class="table table-bordered" width="100%" cellspacing="0">
-                                    {% for selstationname in stationname %}
-                                        <tr>
+                                <table class="table table-bordered" width="100%" cellspacing="0" id="station_Name">  
+                                        <tr id="station_tr">
                                             <td>{{selstationname}}</td>
                                         </tr>
-                                    {% endfor %}
                                 </table>
                             </div>
                         </div>
@@ -171,22 +169,66 @@
             </div>
         </main>
     </div>
-
+{% endblock %}
+{% block scrip %}
     <script>
         //select 의 id를 찾아서 정보를 가져온다.
-        const selectedgu = document.querySelector('#rent_GU')
+        const selectedgu = document.querySelector('#rent_Gu')
+        console.log('***************************')
         console.log(selectedgu)
         //가져온 정보를 addeventListener를 통해 출력해준다.
         selectedgu.addEventListener('change', function(event) {
             console.log(event.target.value)
             temp = event.target.value
             axios.get(`/board/search/`, {
-                params: {
-                    rentGu : temp
+                "params": {
+                    "rentGu" : temp
                 }
             })
             .then(function(response) {
+                console.log('******$$$$$$*******')
                 console.log(response);
+                const selecteddong = document.querySelector('#rent_Dong')
+                selecteddong.innerHTML=""
+                response.data.rentdong.forEach(data => {
+                    const optionTag = document.createElement('option')
+                    optionTag.innerText = data
+                    
+                    selecteddong.append(optionTag)
+                })
+                //console.log('*********########*********')
+                //console.log(response.data)
+                //selecteddong.innerText = response.data
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+        })
+        const selectedDong = document.querySelector('#rent_Dong')
+        console.log('*********@@@@@@@@*******')
+        console.log(selectedDong)
+        selectedDong.addEventListener('change', function(event1) {
+            tempdong = event1.target.value
+            const selectedGu = document.querySelector('#rent_Gu').value
+            axios.get(`/board/search/`, {
+                "params": {
+                    "rentGu" : selectedGu,
+                    "rentDong" : tempdong,
+                }
+            })
+            .then(function(response) {
+                console.log('******%%%%%%******')
+                console.log(response);
+                const selstationname = document.querySelector('#station_Name')
+                selstationname.innerHTML = ""
+                response.data.stationname.forEach(data => {
+                    
+                    const tableTag = document.createElement('tr')
+                    tableTag.innerText = data
+                    const selstationname = document.querySelector('#station_Name')
+                    selstationname.append(tableTag)
+                    
+                })
             })
             .catch(function(error) {
                 console.log(error);
