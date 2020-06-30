@@ -4,7 +4,51 @@
   <main>
     <div class="container-fluid">
       <h1 class="mt-4">공지사항</h1>
+      <hr>
+      <div class="card mb-4">
+        <div class="card-header">
+          <i class="fas fa-table mr-1"></i>
+          게시판
+          <a class="btn btn-primary float-right" href="{% url 'board:create' %}" >글 작성</a>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-boardered table-hover" id="noticeTable" width="100%" cellspacing="0">
+              <thead>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>날짜</th>
+              </thead>
+              <tbody>
+                {% for notice in notices %}
+                  <tr onclick="document.location.href='{% url 'board:detail' notice.pk %}'">
+                    <td>{{ notice.pk }}</td>
+                    <td>{{ notice.title }}</td>
+                    <td>{{ notice.user.username }}</td>
+                    <td>{{ notice.created_at }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </main>
 </div>
+{% endblock %}
+{% block scrip %}
+<script>
+  $("#noticeTable").DataTable({
+    ordering: false,
+    // 정보 표시 숨기기
+    info: false,
+    columnDefs: [
+      { targets: 0, width: 100 },
+      { targets: 2, width: 200 },
+      { targets: 3, width: 200 }
+    ]
+  });
+</script>
 {% endblock %}
