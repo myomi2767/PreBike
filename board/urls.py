@@ -14,6 +14,9 @@ urlpatterns = [
     path('notice/', views.notice, name="notice"),
     path('notice/create/', views.create, name="create"),
     path('notice/<int:notice_pk>/', views.detail, name="detail"),
+    path('notice/<int:notice_pk>/update', views.update, name="update"),
+    path('notice/<int:notice_pk>/delete', views.delete, name="delete"),
     path('notice/<int:notice_pk>/comment_create/', views.comment_create, name="comment_create"),
+    path('notice/<int:notice_pk>/comment_delete/<int:comment_pk>/', views.comment_delete, name="comment_delete"),
     path('search/', views.search, name="search"),
 ]

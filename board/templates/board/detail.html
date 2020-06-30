@@ -4,23 +4,74 @@
 {% block body %}
 <div id="layoutSidenav_content">
   <main>
+    <br>
     <div class="container-fluid">
       <div class="card mb-4">
+        <div class="row">
+          {% if request.user == notice.user %}
+            <div class="col-9"></div>
+            <div class="col-1">
+              <a class="btn btn-warning w-100" href="{% url 'board:notice' %}">목록보기</a>
+            </div>
+            <div class="col-1">
+              <a class="btn btn-warning w-100" href="{% url 'board:update' notice.pk %}">글 수정</a>
+            </div>
+            <div class="col-1">
+              <form action="{% url 'board:delete' notice.pk %}" method="POST">
+                {% csrf_token %}
+                <input type="submit" value="글 삭제" class="btn btn-warning w-100">
+              </form>
+            </div>
+          {% else %}
+            <a class="btn btn-warning float-right" href="{% url 'board:notice' %}">목록보기</a>
+          {% endif %}
+        </div>
         <div class="card-header">
           <h2>{{ notice.title }}</h2>
         </div>
         <div class="card-body">
-          {{ notice.content }}
+          <div>{{ notice.content }}</div>
+          <div>
+            {% if notice.image %}
+              <img src="{{ notice.image_thumbnail.url }}" class="card-img-top" alt="{{ notice.image }}">
+            {% endif %}
+          </div>
+          <div>
+            {% if notice.upload %}
+              <a id="id_uploaded_file" class="badge badge-pill badge-info" href="{{ notice.upload.url }}" download>첨부파일 : {{ notice.upload.name }}</a>
+            {% endif %}
+          </div>
         </div>
-        <hr>
-        <div>
+        <div class="card-footer">
+          <div>
+            {% for comment in comments %}
+              <p style="color: #4aa8d8;">{{ comment.user.username }}</p>
+              <div style="text">
+                <b>{{ comment.content }}</b>
+                <!-- 2개 이상의 값을 넘겨주고자 할 때 순서 주의 -->
+                {% if request.user == comment.user %}
+                  <div class="float-right">
+                    <form action="{% url 'board:comment_delete' notice.pk comment.pk %}" method="POST">
+                      {% csrf_token %}
+                      <input type="submit" value="댓글 삭제" class="btn btn-secondary">
+                    </form>
+                  </div>
+                {% endif %}
+                </div>
+              <hr>
+            {% empty %}
+              <p>댓글이 없습니다.</p>  
+            {% endfor %}
+          </div>
           {% if user.is_authenticated %}
             <form action="{% url 'board:comment_create' notice.pk %}" method="POST">
               {% csrf_token %}
-              {% bootstrap_form comment_form %}
-              {% buttons %}
-                <input type="submit" value="댓글생성" class="btn btn-primary">
-              {% endbuttons %}
+              <div class="input-group mb-3">
+                {{ comment_form }}
+                <div class="input-group-append">
+                  <button class="btn btn-outline-secondary" type="submit" id="button-addon2">댓글 생성</button>
+                </div>
+              </div>
             </form>
           {% else %}
             <a href="{% url 'board:login' %}">[댓글을 작성하시려면 로그인을 해 주세요.]</a>

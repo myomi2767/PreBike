@@ -17,9 +17,9 @@ class CommentForm(forms.ModelForm):
         model = Comment
         exclude = ['notice', 'user']
         widgets = {
-            'content' : forms.TextInput(attrs={'style' : 'width: 80%'})
+            'content' : forms.TextInput(attrs={'class' : 'form-control' ,'aria-describedby' : 'button-addon2', 'aria-label' : 'comment' })
         }
         labels = {
-            'content' : '댓글',
+            'content' : '',
         }
 
