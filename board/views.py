@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth import login as auth_login, logout as auth_logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate
 from django.contrib import messages
 from .models import Address, Rent, Recede
 # from .forms import ArticleForm
@@ -96,7 +99,6 @@ def notice(request):
 def search(request):
     seldong = request.GET.get('selectedgu')
     data = {
-        Ar
     }
 
     request.GET.get('selecteddong')
