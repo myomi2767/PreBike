@@ -9,6 +9,9 @@ from .models import Address, Rent, Recede, Notice, Comment
 from .forms import NoticeForm, CommentForm
 from django.core.paginator import Paginator
 import csv, sqlite3
+
+
+
 from django.http import JsonResponse
 
 # Create your views here.
@@ -89,6 +92,10 @@ def charts(request):
     return render(request, 'board/charts.html')
 
 def tables(request):
+
+
+
+
     return render(request, 'board/tables.html')
 
 def notice(request):
@@ -189,11 +196,11 @@ def comment_delete(request, notice_pk, comment_pk):
         return redirect('board:login')
 
 def search(request):
-    seldong = request.GET.get('selectedgu')
+    selectedgu = request.GET.get('selected')
     print("*"*30)
-    print(seldong)
+    print(selectedgu)
     print("*"*30)
-    rentdong = Address.objects.filter(seldong).distinct()
+    rentdong = Address.objects.filter(rentGu=selectedgu).distinct()
     print("*"*30)
     print(rentdong)
     print("*"*30)

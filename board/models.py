@@ -47,23 +47,24 @@ class Address(models.Model):
     stationName = models.CharField(max_length=100) 
     stationNum = models.IntegerField(default=0)
     stationValue = models.IntegerField(default=0)
- 
     def __str__(self):
         return f'Address:{self.rentGu},{self.rentDong},{self.stationName},{self.stationNum},{self.stationValue}'
 
 class Rent(models.Model):
     rentTime = models.CharField(max_length=20)
     stationNum = models.IntegerField(default=0)
-    stationName = models.CharField(max_length=100)    
-
+    stationName = models.CharField(max_length=100)
+    class Meta:
+        ordering = ['rentTime']
     def __str__(self):
-        return f'Rent:{self.rentTime},{self.stationNum},{self.stationName}'
+        return f'Rent:{self.rentTime},{self.stationNum},{self.stationName} : {self.address}'
 
 class Recede(models.Model):
     recedeTime = models.CharField(max_length=20)
     restationNum = models.IntegerField(default=0)
     restationName = models.CharField(max_length=100)
-
+    class Meta:
+        ordering = ['recedeTime']
     def __str__(self):
         return f'Recede:{self.recedeTime},{self.restationNum},{self.restationName}'
 
