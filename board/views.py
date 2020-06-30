@@ -1,12 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import login as auth_login, logout as auth_logout
+from django.contrib.auth import login as auth_login, logout as auth_logout, authenticate
 from django.contrib import messages
 from .models import Address, Rent, Recede
 # from .forms import ArticleForm
 from django.core.paginator import Paginator
 import csv, sqlite3
+
+
+
 from django.http import JsonResponse
 
 # Create your views here.
@@ -87,17 +90,21 @@ def charts(request):
     return render(request, 'board/charts.html')
 
 def tables(request):
+
+
+
+
     return render(request, 'board/tables.html')
 
 def notice(request):
     return render(request, 'board/notice.html')
 
 def search(request):
-    seldong = request.GET.get('selectedgu')
+    selectedgu = request.GET.get('selected')
     print("*"*30)
-    print(seldong)
+    print(selectedgu)
     print("*"*30)
-    rentdong = Address.objects.filter(seldong).distinct()
+    rentdong = Address.objects.filter(rentGu=selectedgu).distinct()
     print("*"*30)
     print(rentdong)
     print("*"*30)

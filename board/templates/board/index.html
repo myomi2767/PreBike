@@ -75,7 +75,7 @@
                                     <!-- 요청한곳에는 변경된 select 값을 가지는 데이터들을 조회한다. -->
                                     <!-- 그 조회된 값들을 json으로 넘겨준다. -->
                                     {% for selgu in rentgu %}
-                                        <option value={{selgu}}>{{selgu}}</option>
+                                        <option value="{{selgu}}">{{selgu}}</option>
                                     {% endfor %}
                                 </select>
                                 <select id="rent_Dong" name="Dong_list" value="동">
@@ -118,7 +118,7 @@
                                 <tbody>
                                     {% for address in addresses%}
                                     <tr>
-                                        <td></td>
+                                        <td>{{address.pk}}</td>
                                         <td>{{address.rentGu}}</td>
                                         <td>{{address.rentDong}}</td>
                                         <td>{{address.stationName}}</td>
@@ -173,15 +173,24 @@
     </div>
 
     <script>
-        axios.get('selectedgu')
-            .then(response => {
-                const selectedGu = document.getElementById('rent_Gu').value;
-
-                const myJson = document.querySelector()
-
+        //select 의 id를 찾아서 정보를 가져온다.
+        const selectedgu = document.querySelector('#rent_GU')
+        console.log(selectedgu)
+        //가져온 정보를 addeventListener를 통해 출력해준다.
+        selectedgu.addEventListener('change', function(event) {
+            console.log(event.target.value)
+            temp = event.target.value
+            axios.get(`/board/search/`, {
+                params: {
+                    rentGu : temp
+                }
             })
-
+            .then(function(response) {
+                console.log(response);
+            })
+            .catch(function(error) {
+                console.log(error);
+            });
+        })
     </script>
-
-
 {% endblock %}
