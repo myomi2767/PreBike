@@ -129,6 +129,35 @@ def detail(request, notice_pk):
     }
     return render(request, 'board/detail.html', context)
 
+@login_required
+def update(request, notice_pk):
+    notice = get_object_or_404(Notice, pk=notice_pk)
+    if notice.user == request.user:
+        if request.method == "POST":
+            form = NoticeForm(request.POST, request.FILES, instance=notice)
+            if form.is_valid():
+                notice = form.save()
+                return redirect('board:detail', notice.pk)
+        else:
+            form = NoticeForm(instance=notice)
+        context = {
+            'form': form
+        }
+        return render(request, 'board/form.html', context)
+    else:
+        return redirect('board:detail', notice.pk)
+
+@require_POST
+def delete(request, notice_pk):
+    if request.user.is_authenticated:
+        notice = get_object_or_404(Article, pk=notice_pk)
+        if notice.user == request.user:
+            notice.delete()
+            return redirect('board:notice')
+        else:
+            return redirect('board:detail', notice_pk.pk)
+    return redirect('board:login')
+
 @require_POST
 def comment_create(request, notice_pk):
     if request.user.is_authenticated:
@@ -146,6 +175,16 @@ def comment_create(request, notice_pk):
         #         'notice': notice
         #     }
         #     return render(request, 'board/detail.html', context)
+    else:
+        return redirect('board:login')
+
+@require_POST
+def comment_delete(request, notice_pk, comment_pk):
+    if request.user.is_authenticated:
+        comment = get_object_or_404(Comment, pk=comment_pk)
+        if comment.user == request.user:
+            comment.delete()
+        return redirect('board:detail', notice_pk)
     else:
         return redirect('board:login')
 
