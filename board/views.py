@@ -1,10 +1,16 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
+<<<<<<< HEAD
 from django.contrib.auth import login as auth_login, logout as auth_logout, authenticate
+=======
+from django.contrib.auth import login as auth_login, logout as auth_logout
+from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth import authenticate
+>>>>>>> fd336e4411ed7c6ed4be951a2788a251c734c825
 from django.contrib import messages
-from .models import Address, Rent, Recede
-# from .forms import ArticleForm
+from .models import Address, Rent, Recede, Notice, Comment
+from .forms import NoticeForm, CommentForm
 from django.core.paginator import Paginator
 import csv, sqlite3
 
@@ -97,7 +103,62 @@ def tables(request):
     return render(request, 'board/tables.html')
 
 def notice(request):
-    return render(request, 'board/notice.html')
+    notices = Notice.objects.all()
+    context = {
+        'notices' : notices
+    }
+    return render(request, 'board/notice.html', context)
+
+@login_required
+def create(request):
+    if request.method == "POST":
+        form = NoticeForm(request.POST, request.FILES)
+        if form.is_valid():
+            notice = form.save(commit=False)
+            notice.user = request.user
+            notice.save()
+            messages.success(request, '게시글 작성 완료!!!!!')
+            # return redirect('articles:detail', notice.pk)
+            return redirect('board:notice')
+        else:
+            messages.error(request, '너 잘못된 데이터를 넣었어!!!')
+    else:
+        form = NoticeForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'board/form.html', context)
+
+def detail(request, notice_pk):
+    notice = get_object_or_404(Notice, pk=notice_pk)
+    comment_form = CommentForm()
+    comments = notice.comment_set.all()
+    context = {
+        'notice' : notice,
+        'comment_form' : comment_form,
+        'comments' : comments,
+    }
+    return render(request, 'board/detail.html', context)
+
+@require_POST
+def comment_create(request, notice_pk):
+    if request.user.is_authenticated:
+        notice = get_object_or_404(Notice, pk=notice_pk)
+        comment_form = CommentForm(request.POST)
+        if comment_form.is_valid():
+            comment = comment_form.save(commit=False)
+            comment.notice = notice
+            comment.user = request.user
+            comment.save()
+            return redirect('board:detail', notice.pk)
+        # else:
+        #     context = {
+        #         'comment_form': comment_form,
+        #         'notice': notice
+        #     }
+        #     return render(request, 'board/detail.html', context)
+    else:
+        return redirect('board:login')
 
 def search(request):
     selectedgu = request.GET.get('selected')

@@ -12,5 +12,8 @@ urlpatterns = [
     path('charts/', views.charts, name="charts"),
     path('tables/', views.tables, name="tables"),
     path('notice/', views.notice, name="notice"),
+    path('notice/create/', views.create, name="create"),
+    path('notice/<int:notice_pk>/', views.detail, name="detail"),
+    path('notice/<int:notice_pk>/comment_create/', views.comment_create, name="comment_create"),
     path('search/', views.search, name="search"),
 ]

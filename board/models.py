@@ -5,7 +5,7 @@ from imagekit.processors import Thumbnail
 
 
 # Create your models here.
-def articles_image_path(instance, filename):
+def notices_image_path(instance, filename):
     return f'user_{instance.user.pk}/{filename}'
 
 # class Article(models.Model):
@@ -67,3 +67,30 @@ class Recede(models.Model):
         ordering = ['recedeTime']
     def __str__(self):
         return f'Recede:{self.recedeTime},{self.restationNum},{self.restationName}'
+
+# 공지사항 model
+class Notice(models.Model):
+    title = models.CharField(max_length=150)
+    content = models.TextField()
+    image = models.ImageField(blank=True, upload_to=notices_image_path)
+    image_thumbnail = ImageSpecField(
+        source='image',
+        processors=[Thumbnail(400,500)],
+        format='JPEG',
+        options={'quality':90}
+    )
+    upload = models.FileField(blank=True, upload_to=notices_image_path, max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+class Comment(models.Model):
+    # 멤버 변수 = models.외래키(참조하는 객체, 삭제 되었을 때 처리 방법)
+    notice = models.ForeignKey(Notice, on_delete=models.CASCADE)
+    # 역참조 값 설정 related_name='comments'
+    content = models.CharField(max_length=200)
+    created_at = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'Notice:{self.notice}, {self.pk}-{self.content}'
