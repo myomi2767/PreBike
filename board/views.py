@@ -9,8 +9,7 @@ from .models import Address, Rent, Recede
 # from .forms import ArticleForm
 from django.core.paginator import Paginator
 import csv, sqlite3
-import logging
-
+from django.http import JsonResponse
 
 # Create your views here.
 def index(request):
@@ -27,7 +26,7 @@ def index(request):
     if request.user.is_authenticated:
         addresses = Address.objects.all()
         rentgu = Address.objects.values_list('rentGu', flat=True).distinct()
-        rentdong = Address.objects.values_list('rentDong', flat=True).distinct()
+        # rentdong = Address.objects.values_list('rentDong', flat=True).distinct()
         stationname = Address.objects.values_list('stationName', flat=True).distinct()
         subpaginator = Paginator(stationname, 10)
         page1 = request.GET.get('page')
@@ -55,7 +54,6 @@ def index(request):
         context = {
             'addresses' : addresses,
             'rentgu' : rentgu,
-            'rentdong' : rentdong,
             'stationname' : stationname,
             'paginator_range' : paginator_range,
         }
@@ -98,7 +96,14 @@ def notice(request):
 
 def search(request):
     seldong = request.GET.get('selectedgu')
-    data = {
+    print("*"*30)
+    print(seldong)
+    print("*"*30)
+    rentdong = Address.objects.filter(seldong).distinct()
+    print("*"*30)
+    print(rentdong)
+    print("*"*30)
+    context = {
+        'rentdong' : rentdong
     }
-
-    request.GET.get('selecteddong')
+    return JsonResponse(context)
