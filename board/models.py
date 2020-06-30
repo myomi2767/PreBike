@@ -3,6 +3,7 @@ from django.conf import settings
 from imagekit.models import ImageSpecField
 from imagekit.processors import Thumbnail
 
+
 # Create your models here.
 def articles_image_path(instance, filename):
     return f'user_{instance.user.pk}/{filename}'

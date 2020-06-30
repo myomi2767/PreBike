@@ -69,16 +69,16 @@
                     <div class="col-xl-6">
                         <div class="card mb-4">
                             <div class="card-body">  
-                                <select id="rentGu" name="Gu_list" value="구">
+                                <select id="rent_Gu" name="Gu_list" value="구">
                                     <!-- 1. select의 값이 바뀌면 axios 요청을 한다. -->
                                     <option value="" selected="selected">-----구 선택-----</option>
                                     <!-- 요청한곳에는 변경된 select 값을 가지는 데이터들을 조회한다. -->
                                     <!-- 그 조회된 값들을 json으로 넘겨준다. -->
                                     {% for selgu in rentgu %}
-                                        <option value="selectedgu">{{selgu}}</option>
+                                        <option value={{selgu}}>{{selgu}}</option>
                                     {% endfor %}
                                 </select>
-                                <select id="rentDong" name="Dong_list" value="동">
+                                <select id="rent_Dong" name="Dong_list" value="동">
                                     <option selected="selected">-----동 선택-----</option>
                                     {% for seldong in rentdong %}
                                         <option value="selecteddong">{{seldong}}</option>
@@ -171,4 +171,17 @@
             </div>
         </main>
     </div>
+
+    <script>
+        axios.get('selectedgu')
+            .then(response => {
+                const selectedGu = document.getElementById('rent_Gu').value;
+
+                const myJson = document.querySelector()
+
+            })
+
+    </script>
+
+
 {% endblock %}
