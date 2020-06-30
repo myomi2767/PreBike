@@ -1,13 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-<<<<<<< HEAD
-from django.contrib.auth import login as auth_login, logout as auth_logout, authenticate
-=======
 from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
->>>>>>> fd336e4411ed7c6ed4be951a2788a251c734c825
 from django.contrib import messages
 from .models import Address, Rent, Recede, Notice, Comment
 from .forms import NoticeForm, CommentForm
