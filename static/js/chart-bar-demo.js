@@ -22,7 +22,7 @@ var myLineChart = new Chart(ctx, {
       xAxes: [{
         time: {
           //unit: 'month'
-          unit: 'hour'
+          unit: 'week'
         },
         gridLines: {
           display: false,

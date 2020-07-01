@@ -5,11 +5,11 @@ from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib import messages
-from django.db.models.functions import Substr, datetime
+from django.db.models.functions import Substr
 from .models import Address, Rent, Recede, Notice, Comment
 from .forms import NoticeForm, CommentForm
 from django.core.paginator import Paginator
-import csv, sqlite3
+import datetime
 
 
 
@@ -21,10 +21,7 @@ def index(request):
     if request.user.is_authenticated:
         addresses = Address.objects.all()
         rentgu = Address.objects.values_list('rentGu', flat=True).distinct()
-        
-        print("*"*30)
-        print(rentgu)
-        print("*"*30)
+    
         # rentplace = Rent.objects.filter(rentTime=Substr('rentTime',6,7))
 
         paginator = Paginator(addresses, 100)
@@ -166,7 +163,7 @@ def update(request, notice_pk):
 @require_POST
 def delete(request, notice_pk):
     if request.user.is_authenticated:
-        notice = get_object_or_404(Article, pk=notice_pk)
+        notice = get_object_or_404(Notice, pk=notice_pk)
         if notice.user == request.user:
             notice.delete()
             return redirect('board:notice')
