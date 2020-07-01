@@ -18,5 +18,8 @@ urlpatterns = [
     path('notice/<int:notice_pk>/delete', views.delete, name="delete"),
     path('notice/<int:notice_pk>/comment_create/', views.comment_create, name="comment_create"),
     path('notice/<int:notice_pk>/comment_delete/<int:comment_pk>/', views.comment_delete, name="comment_delete"),
+    path('error_404/', views.error_404, name="error_404"),
+    path('error_401/', views.error_401, name="error_401"),
+    path('error_500/', views.error_500, name="error_500"),
     path('search/', views.search, name="search"),
 ]
