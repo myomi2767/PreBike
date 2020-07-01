@@ -220,7 +220,6 @@ def search(request):
         dong = Address.objects.filter(rentGu=selectedgu, rentDong=selecteddong)
         for stationdata in dong:
             station.append({'stationname': stationdata.stationName, 'stationnum': stationdata.stationNum})
-
     context = {
         'rentdong' : list(rentdong),
         'station' : station,
