@@ -82,21 +82,25 @@ def charts(request):
     print("*"*40)
     print(stationNum)
     print("*"*40)
-    start_date = datetime.date(2019,11,1)
-    end_date = datetime.date(2019,11,8)
-    print(start_date, end_date)
-    print("*"*40)
-    # rentplace = Rent.objects.filter(rentTime__contains='2019-11', stationNum=stationNum).order_by('rentTime')
-    # recedeplace = Recede.objects.filter(recedeTime__contains='2019-11', restationNum=stationNum).order_by('recedeTime')
-    rentplace = Rent.objects.filter(rentTime__range=(start_date, end_date), stationNum=stationNum).order_by('rentTime')
-    recedeplace = Recede.objects.filter(recedeTime__range=(start_date, end_date), restationNum=stationNum).order_by('recedeTime')
-    print("$*"*20)
-    print(rentplace)
-    print(rentplace.count())
-    print("$*"*20)
-    print(recedeplace)
-    print(recedeplace.count())
-    print("$*"*20)
+    a = 7
+    for i in range(4):
+        if i == 3:
+            a = 9
+        start_date = datetime.date(2019,11,(i*7+1))
+        end_date = datetime.date(2019,11,i*7+a)
+        print(start_date, end_date)
+        print("*"*40)
+        # rentplace = Rent.objects.filter(rentTime__contains='2019-11', stationNum=stationNum).order_by('rentTime')
+        # recedeplace = Recede.objects.filter(recedeTime__contains='2019-11', restationNum=stationNum).order_by('recedeTime')
+        rentplace = Rent.objects.filter(rentTime__range=(start_date, end_date), stationNum=stationNum).order_by('rentTime')
+        recedeplace = Recede.objects.filter(recedeTime__range=(start_date, end_date), restationNum=stationNum).order_by('recedeTime')
+        print("$*"*20)
+        print("rentplace:")
+        print(rentplace.count())
+        print("$*"*20)
+        print("recedeplace:")
+        print(recedeplace.count())
+        print("$*"*20)
     return render(request, 'board/charts.html')
 
 def tables(request):
@@ -211,18 +215,14 @@ def search(request):
     # 중복제거
     rentdong = set(rentdong)    
  
-    stationname = []
-    stationnum = []
+    station = []
     if selecteddong != None :
         dong = Address.objects.filter(rentGu=selectedgu, rentDong=selecteddong)
-        print(dong)
         for stationdata in dong:
-            stationname.append(stationdata.stationName)
-            stationnum.append(stationdata.stationNum)
+            station.append({'stationname': stationdata.stationName, 'stationnum': stationdata.stationNum})
 
     context = {
         'rentdong' : list(rentdong),
-        'stationnum' : stationnum,
-        'stationname' : stationname,
+        'station' : station,
     }
     return JsonResponse(context)

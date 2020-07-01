@@ -69,8 +69,13 @@
                 <div class="row">
                     <div class="col-xl-4">
                         <div class="card mb-4">
-                            <div class="card-body">  
-                                <select id="rent_Gu" name="Gu_list" value="구">
+                            <div class="card-header">
+                                <div>
+                                  <i class="fas fa-table mr-1"></i>
+                                  주소선택
+                                </div>
+                                <div>
+                                  <select id="rent_Gu" name="Gu_list" value="구">
                                     <!-- 1. select의 값이 바뀌면 axios 요청을 한다. -->
                                     <option value="" selected="selected">-----구 선택-----</option>
                                     <!-- 요청한곳에는 변경된 select 값을 가지는 데이터들을 조회한다. -->
@@ -78,21 +83,29 @@
                                     {% for selgu in rentgu %}
                                         <option value="{{selgu}}">{{selgu}}</option>
                                     {% endfor %}
-                                </select>
-                                <select id="rent_Dong" name="Dong_list" value="동">
-                                    <option value="" selected="selected">-----동 선택-----</option>
-                                    {% for seldong in rentdong %}
-                                        <option value="{{seldong}}">{{seldong}}</option>
-                                    {% endfor %}
-                                </select>
+                                  </select>
+                                  <select id="rent_Dong" name="Dong_list" value="동">
+                                      <option value="" selected="selected">-----동 선택-----</option>
+                                      {% for seldong in rentdong %}
+                                          <option value="{{seldong}}">{{seldong}}</option>
+                                      {% endfor %}
+                                  </select>
+                                </div>
                             </div>
-                            <div class="table-responsive">
-                                <table class="table table-bordered" width="100%" cellspacing="10" id="station_Name">  
-                                        <tr id="station_tr">
-                                            <!-- <td><input type="button" id="selName" value="{{selstationname}}"/></td> -->
-                                            <td>{{selstationname}}</td>
-                                        </tr>
+                            <div class="card-body">  
+                              <div class="table-responsive">
+                                <table class="table table-bordered table-hover " width="100%" cellspacing="10" id="indexTable"> 
+                                  <thead>
+                                    <th>대여소명</th>
+                                  </thead>
+                                  <tbody class="station_Name">
+                                    <tr id="station_tr">
+                                      <!-- <td><input type="button" id="selName" value="{{selstationname}}"/></td> -->
+                                      <td>{{selstationname}}</td>
+                                    </tr>
+                                  </tbody>
                                 </table>
+                              </div>    
                             </div>
                         </div>
                     </div>
@@ -106,162 +119,170 @@
                         </div>
                     </div>  
                 </div>
-                <div class="card mb-4">
-                    <div class="card-header">
-                        <i class="fas fa-table mr-1"></i>
-                        DataTable Example
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>대여소구</th>
-                                        <th>대여소동</th>
-                                        <th>대여소명</th>
-                                        <th>대여소ID</th>
-                                        <th>거치대수</th>                                        
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for address in addresses%}
-                                    <tr>
-                                        <td>{{address.pk}}</td>
-                                        <td>{{address.rentGu}}</td>
-                                        <td>{{address.rentDong}}</td>
-                                        <td>{{address.stationName}}</td>
-                                        <td>{{address.stationNum}}</td>
-                                        <td>{{address.stationValue}}</td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <ul class="pagination justify-content-center">
-                        {% if addresses.has_previous %}
-                        <li class="page-item">
-                            <a href="?page=1" class="page-link">&laquo;</a>
-                        </li>
-                        <li class="page-item">
-                            <a class="page-link" 
-                            href="?page={{ addresses.previous_page_number }}" 
-                            tabindex="-1">&lt;
-                            </a>
-                        </li>
-                        {% endif %}
-                        <!-- 페이지 범위 및 현재 페이지 -->
-                        {% for page in paginator_range %}
-                        {% if addresses.number == page %}
-                        <li class="page-item active">
-                            <!-- [1] -->
-                            <span class="page-link">{{ page }}
-                                <span class="sr-only">(current)</span>
-                            </span>
-                        </li>
-                        {% else %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ page }}">{{ page }}</a>
-                        </li>
-                        {% endif %}
-                        {% endfor %}
-                        <!-- 다음 페이지 -->
-                        {% if addresses.has_next %}
-                        <li class="page-item">
-                            <a class="page-link" href="?page={{ addresses.next_page_number }}">&gt;</a>
-                        </li>
-                        <li class="page-item">
-                            <a href="?page={{ addresses.paginator.num_pages }}" class="page-link">&raquo;</a>
-                        </li>
-                        {% endif %}
-                    </ul>
+                <br>
+              <div class="row">
+                <div class="col-xl-12">
+                  <div class="card mb-4">
+                      <div class="card-header">
+                          <i class="fas fa-table mr-1"></i>
+                          DataTable Example
+                      </div>
+                      <div class="card-body">
+                          <div class="table-responsive">
+                              <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                  <thead>
+                                      <tr>
+                                          <th></th>
+                                          <th>대여소구</th>
+                                          <th>대여소동</th>
+                                          <th>대여소명</th>
+                                          <th>대여소ID</th>
+                                          <th>거치대수</th>                                        
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      {% for address in addresses%}
+                                      <tr>
+                                          <td>{{address.pk}}</td>
+                                          <td>{{address.rentGu}}</td>
+                                          <td>{{address.rentDong}}</td>
+                                          <td>{{address.stationName}}</td>
+                                          <td>{{address.stationNum}}</td>
+                                          <td>{{address.stationValue}}</td>
+                                      </tr>
+                                      {% endfor %}
+                                  </tbody>
+                              </table>
+                          </div>
+                      </div>
+                      <ul class="pagination justify-content-center">
+                          {% if addresses.has_previous %}
+                          <li class="page-item">
+                              <a href="?page=1" class="page-link">&laquo;</a>
+                          </li>
+                          <li class="page-item">
+                              <a class="page-link" 
+                              href="?page={{ addresses.previous_page_number }}" 
+                              tabindex="-1">&lt;
+                              </a>
+                          </li>
+                          {% endif %}
+                          <!-- 페이지 범위 및 현재 페이지 -->
+                          {% for page in paginator_range %}
+                          {% if addresses.number == page %}
+                          <li class="page-item active">
+                              <!-- [1] -->
+                              <span class="page-link">{{ page }}
+                                  <span class="sr-only">(current)</span>
+                              </span>
+                          </li>
+                          {% else %}
+                          <li class="page-item">
+                              <a class="page-link" href="?page={{ page }}">{{ page }}</a>
+                          </li>
+                          {% endif %}
+                          {% endfor %}
+                          <!-- 다음 페이지 -->
+                          {% if addresses.has_next %}
+                          <li class="page-item">
+                              <a class="page-link" href="?page={{ addresses.next_page_number }}">&gt;</a>
+                          </li>
+                          <li class="page-item">
+                              <a href="?page={{ addresses.paginator.num_pages }}" class="page-link">&raquo;</a>
+                          </li>
+                          {% endif %}
+                      </ul>
+                  </div>
                 </div>
+              </div>
             </div>
         </main>
     </div>
 {% endblock %}
 {% block scrip %}
-    <script>
-        //select 의 id를 찾아서 정보를 가져온다.
-        const selectedgu = document.querySelector('#rent_Gu')
-        console.log('***************************')
-        console.log(selectedgu)
-        //가져온 정보를 addeventListener를 통해 출력해준다.
-        selectedgu.addEventListener('change', function(event) {
-            console.log(event.target.value)
-            temp = event.target.value
-            axios.get(`/board/search/`, {
-                "params": {
-                    "rentGu" : temp
-                }
-            })
-            .then(function(response) {
-                console.log('******$$$$$$*******')
-                console.log(response);
-                const selecteddong = document.querySelector('#rent_Dong')
-                selecteddong.innerHTML=""
-                response.data.rentdong.forEach(data => {
-                    const optionTag = document.createElement('option')
-                    optionTag.innerText = data
-                    
-                    selecteddong.append(optionTag)
-                })
-                //console.log('*********########*********')
-                //console.log(response.data)
-                //selecteddong.innerText = response.data
-            })
-            .catch(function(error) {
-                console.log(error);
-            });
-        })
-        const selectedDong = document.querySelector('#rent_Dong')
-        console.log('*********@@@@@@@@*******')
-        console.log(selectedDong)
-        selectedDong.addEventListener('change', function(event1) {
-            tempdong = event1.target.value
-            const selectedGu = document.querySelector('#rent_Gu').value
-            axios.get(`/board/search/`, {
-                "params": {
-                    "rentGu" : selectedGu,
-                    "rentDong" : tempdong,
-                }
-            })
-            .then(function(response) {
-                console.log('******%%%%%%******')
-                console.log(response);
-                const selstationname = document.querySelector('#station_Name')
-                selstationname.innerHTML = ""
-                const tableTag = document.createElement('tr')
-                response.data.stationname.forEach(data => {                  
-                    tableTag.innerText = data
-                })
-                response.data.stationnum.forEach(data => {
-                    tableTag.id = data
-                    const selstationname = document.querySelector('#station_Name')
-                    selstationname.append(tableTag)
-                })
-            })
-            .then(response => {
-                const selStations = document.querySelectorAll('#station_Name tr')
-                selStations.forEach(selStationName =>{
-                    selStationName.addEventListener('click', function(event) {
-                        tempname = event.target.id
+  <script>
+    $("#indexTable").DataTable({
+      //info: false,
+    });
 
-                        axios.get(`/board/charts/`, {
-                            "params": {
-                                "stationNum" : tempname
-                            }
-                        })
+    //select 의 id를 찾아서 정보를 가져온다.
+    const selectedgu = document.querySelector('#rent_Gu')
+    console.log('***************************')
+    console.log(selectedgu)
+    //가져온 정보를 addeventListener를 통해 출력해준다.
+    selectedgu.addEventListener('change', function(event) {
+        console.log(event.target.value)
+        temp = event.target.value
+        axios.get(`/board/search/`, {
+            "params": {
+                "rentGu" : temp
+            }
+        })
+        .then(function(response) {
+            console.log('******$$$$$$*******')
+            console.log(response);
+            const selecteddong = document.querySelector('#rent_Dong')
+            selecteddong.innerHTML=""
+            response.data.rentdong.forEach(data => {
+                const optionTag = document.createElement('option')
+                optionTag.innerText = data
+                
+                selecteddong.append(optionTag)
+            })
+            //console.log('*********########*********')
+            //console.log(response.data)
+            //selecteddong.innerText = response.data
+        })
+        .catch(function(error) {
+            console.log(error);
+        });
+    })
+    const selectedDong = document.querySelector('#rent_Dong')
+    console.log('*********@@@@@@@@*******')
+    console.log(selectedDong)
+    selectedDong.addEventListener('change', function(event1) {
+        tempdong = event1.target.value
+        const selectedGu = document.querySelector('#rent_Gu').value
+        axios.get(`/board/search/`, {
+            "params": {
+                "rentGu" : selectedGu,
+                "rentDong" : tempdong,
+            }
+        })
+        .then(function(response) {
+            console.log('******%%%%%%******')
+            console.log(response);
+            const selStation = document.querySelectorAll('.station_Name tr')
+            selStation.forEach(data => {
+                data.remove()
+            })
+            response.data.station.forEach(data => {    
+                const selstationname = document.querySelector('.station_Name')
+                const trTableTag = document.createElement('tr')
+                selstationname.append(trTableTag)
+                const tableTag = document.createElement('td')
+                tableTag.innerText = data.stationname
+                tableTag.id = data.stationnum
+                trTableTag.append(tableTag)
+            })
+        })
+        .then(response => {
+            const selStations = document.querySelectorAll('.station_Name tr td')
+            selStations.forEach(selStationName =>{
+                selStationName.addEventListener('click', function(event) {
+                    tempname = event.target.id
+
+                    axios.get(`/board/charts/`, {
+                        "params": {
+                            "stationNum" : tempname
+                        }
                     })
                 })
             })
-            .catch(function(error) {
-                console.log(error);
-            });
         })
-        
-        
-        
-    </script>
+        .catch(function(error) {
+            console.log(error);
+        });
+    })
+  </script>
 {% endblock %}
