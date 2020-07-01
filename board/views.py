@@ -5,6 +5,7 @@ from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib import messages
+from django.db.models.functions import Substr, datetime
 from .models import Address, Rent, Recede, Notice, Comment
 from .forms import NoticeForm, CommentForm
 from django.core.paginator import Paginator
@@ -16,27 +17,16 @@ from django.http import JsonResponse
 
 # Create your views here.
 def index(request):
-    # article = Article.objects.all()
-    # 1. Paginator(전체 리스트, 한 페이지당 개수)
-    # paginator = Paginator(article, 3)
-    # 2. 몇 번째 페이지를 보여줄 것인지 GET으로 가져오기
-    # page = request.GET.get('page')
-    # 해당하는 페이지의 게시글만 가져오기
-    # articles = paginator.get_page(page)
-    # context = {
-    #     'articles' : articles
-    # }
+
     if request.user.is_authenticated:
         addresses = Address.objects.all()
         rentgu = Address.objects.values_list('rentGu', flat=True).distinct()
-        # rentdong = Address.objects.values_list('rentDong', flat=True).distinct()
-        stationname = Address.objects.values_list('stationName', flat=True).distinct()
-        subpaginator = Paginator(stationname, 10)
-        page1 = request.GET.get('page')
-        stationname = subpaginator.get_page(page1)
+        
         print("*"*30)
         print(rentgu)
         print("*"*30)
+        # rentplace = Rent.objects.filter(rentTime=Substr('rentTime',6,7))
+
         paginator = Paginator(addresses, 100)
         # 페이지 개수 범위 설정
         page_numbers_range = 10
@@ -57,7 +47,6 @@ def index(request):
         context = {
             'addresses' : addresses,
             'rentgu' : rentgu,
-            'stationname' : stationname,
             'paginator_range' : paginator_range,
         }
         return render(request, 'board/index.html', context)
@@ -89,12 +78,28 @@ def password(request):
     return render(request, 'board/password.html')
 
 def charts(request):
+    stationNum = request.GET.get('stationNum')
+    print("*"*40)
+    print(stationNum)
+    print("*"*40)
+    start_date = datetime.date(2019,11,1)
+    end_date = datetime.date(2019,11,8)
+    print(start_date, end_date)
+    print("*"*40)
+    # rentplace = Rent.objects.filter(rentTime__contains='2019-11', stationNum=stationNum).order_by('rentTime')
+    # recedeplace = Recede.objects.filter(recedeTime__contains='2019-11', restationNum=stationNum).order_by('recedeTime')
+    rentplace = Rent.objects.filter(rentTime__range=(start_date, end_date), stationNum=stationNum).order_by('rentTime')
+    recedeplace = Recede.objects.filter(recedeTime__range=(start_date, end_date), restationNum=stationNum).order_by('recedeTime')
+    print("$*"*20)
+    print(rentplace)
+    print(rentplace.count())
+    print("$*"*20)
+    print(recedeplace)
+    print(recedeplace.count())
+    print("$*"*20)
     return render(request, 'board/charts.html')
 
 def tables(request):
-
-
-
 
     return render(request, 'board/tables.html')
 
@@ -207,14 +212,17 @@ def search(request):
     rentdong = set(rentdong)    
  
     stationname = []
+    stationnum = []
     if selecteddong != None :
         dong = Address.objects.filter(rentGu=selectedgu, rentDong=selecteddong)
         print(dong)
         for stationdata in dong:
             stationname.append(stationdata.stationName)
+            stationnum.append(stationdata.stationNum)
 
     context = {
         'rentdong' : list(rentdong),
-        'stationname' : stationname
+        'stationnum' : stationnum,
+        'stationname' : stationname,
     }
     return JsonResponse(context)
