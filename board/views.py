@@ -231,3 +231,12 @@ def search(request):
         'station' : station,
     }
     return JsonResponse(context)
+
+def error_404(request):
+    return render(request, 'board/404.html')
+
+def error_401(request):
+    return render(request, 'board/401.html')
+
+def error_500(request):
+    return render(request, 'board/500.html')
