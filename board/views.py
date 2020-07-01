@@ -80,6 +80,8 @@ def charts(request):
     print(stationNum)
     print("*"*40)
     a = 7
+    rentplacelist = []
+    recedeplacelist = []
     for i in range(4):
         if i == 3:
             a = 9
@@ -87,6 +89,7 @@ def charts(request):
         end_date = datetime.date(2019,11,i*7+a)
         print(start_date, end_date)
         print("*"*40)
+        
         # rentplace = Rent.objects.filter(rentTime__contains='2019-11', stationNum=stationNum).order_by('rentTime')
         # recedeplace = Recede.objects.filter(recedeTime__contains='2019-11', restationNum=stationNum).order_by('recedeTime')
         rentplace = Rent.objects.filter(rentTime__range=(start_date, end_date), stationNum=stationNum).order_by('rentTime')
@@ -98,7 +101,13 @@ def charts(request):
         print("recedeplace:")
         print(recedeplace.count())
         print("$*"*20)
-    return render(request, 'board/charts.html')
+        rentplacelist.append(rentplace)
+        recedeplacelist.append(recedeplace)
+    context = {
+        'rentplacelist' : rentplacelist,
+        'recedeplacelist' : recedeplacelist,
+    }    
+    return JsonResponse(context)
 
 def tables(request):
 
