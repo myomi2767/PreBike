@@ -5,7 +5,17 @@ Chart.defaults.global.defaultFontColor = '#292b2c';
 // datapass from index.html
 
 $("#indexTable").DataTable({
-  //info: false,
+  // 표시 건수기능 숨기기
+  lengthChange: false,
+  // 검색 기능 숨기기
+  searching: false,
+  // 정렬 기능 숨기기
+  ordering: false,
+  // 정보 표시 숨기기
+  info: false,
+  // 페이징 기능 숨기기
+  paging: false,
+  scrollY: 330
 });
 
 //select 의 id를 찾아서 정보를 가져온다.
@@ -26,6 +36,9 @@ selectedgu.addEventListener('change', function(event) {
         console.log(response);
         const selecteddong = document.querySelector('#rent_Dong')
         selecteddong.innerHTML=""
+        const basicOptionTag = document.createElement('option')
+        basicOptionTag.innerText = '-----동 선택-----'
+        selecteddong.append(basicOptionTag)
         response.data.rentdong.forEach(data => {
             const optionTag = document.createElement('option')
             optionTag.innerText = data
@@ -87,12 +100,6 @@ selectedDong.addEventListener('change', function(event1) {
         console.log(error);
     });
 })
-
-const 
-
-
-
-
 
 
 
