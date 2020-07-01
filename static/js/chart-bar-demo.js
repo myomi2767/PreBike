@@ -4,6 +4,7 @@ Chart.defaults.global.defaultFontColor = '#292b2c';
 
 // datapass from index.html
 
+
 $("#indexTable").DataTable({
   // 표시 건수기능 숨기기
   lengthChange: false,
@@ -93,6 +94,31 @@ selectedDong.addEventListener('change', function(event1) {
                         "stationNum" : tempname
                     }
                 })
+                .then(function(response) {
+                    console.log('*********!!!!!!!!*******')
+                    console.log(response)
+                    myLineChart.data.datasets.forEach(function(dataset) {
+                      dataset.data.pop();
+                    });
+                    const barChart = document.querySelectorAll('#myBarChart')
+                    response.data.rentplacelist.forEach(data =>{
+                      console.log('^^^^^^^^')
+                      console.log(data)
+                      //myLineChart.data.datasets[0].data.push(data)
+                      console.log('@@@@@@@@@')
+                      console.log(myLineChart.data.datasets[0].data)
+                      myLineChart.data.datasets[0].data.push(data)
+                      //barChart.update();
+                    })
+                    response.data.recedeplacelist.forEach(data =>{
+                      console.log('`````````')
+                      console.log(data)
+                    })
+                })
+                .catch(function(error) {
+                  console.log(error);
+              });
+                
             })
         })
     })
@@ -100,27 +126,30 @@ selectedDong.addEventListener('change', function(event1) {
         console.log(error);
     });
 })
+// <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
 
 
 
 // Bar Chart Example
-var ctx = document.getElementById("myBarChart");
-var myLineChart = new Chart(ctx, {
+const ctx = document.getElementById("myBarChart");
+const myLineChart = new Chart(ctx, {
   type: 'bar',
   data: {
     //labels: ["January", "February", "March", "April", "May", "June"],
-    labels: ["1st", "2nd", "3rd", "4th"],
+    labels: ["1st week", "2nd week", "3rd week", "4th week"],
     datasets: [{
       label: "Revenue",
       backgroundColor: "rgba(2,117,216,1)",
       borderColor: "rgba(2,117,216,1)",
 
-
       //data: [4215, 5312, 6251, 7841, 9821, 14984],
-      data: [6251, 7841, 9821, 14984],
+      data: [],
     }],
   },
   options: {
+    title: {
+      text: ''
+    },
     scales: {
       xAxes: [{
         time: {
@@ -133,16 +162,25 @@ var myLineChart = new Chart(ctx, {
         },
         ticks: {
           maxTicksLimit: 12
+        },
+        scaleLabel: {
+          display: true,
+          labelString: '주',
         }
       }],
       yAxes: [{
         ticks: {
+          beginAtZero: true,
           min: 0,
           max: 15000,
           maxTicksLimit: 5
         },
         gridLines: {
           display: true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: '대여/반납대수',
         }
       }],
     },
@@ -151,3 +189,4 @@ var myLineChart = new Chart(ctx, {
     }
   }
 });
+

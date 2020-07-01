@@ -94,15 +94,8 @@ def charts(request):
         # recedeplace = Recede.objects.filter(recedeTime__contains='2019-11', restationNum=stationNum).order_by('recedeTime')
         rentplace = Rent.objects.filter(rentTime__range=(start_date, end_date), stationNum=stationNum).order_by('rentTime')
         recedeplace = Recede.objects.filter(recedeTime__range=(start_date, end_date), restationNum=stationNum).order_by('recedeTime')
-        print("$*"*20)
-        print("rentplace:")
-        print(rentplace.count())
-        print("$*"*20)
-        print("recedeplace:")
-        print(recedeplace.count())
-        print("$*"*20)
-        rentplacelist.append(rentplace)
-        recedeplacelist.append(recedeplace)
+        rentplacelist.append(rentplace.count())
+        recedeplacelist.append(recedeplace.count())
     context = {
         'rentplacelist' : rentplacelist,
         'recedeplacelist' : recedeplacelist,
