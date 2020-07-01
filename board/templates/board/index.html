@@ -230,15 +230,15 @@
             .then(function(response) {
                 console.log('******%%%%%%******')
                 console.log(response);
-                const selstationname = document.querySelector('#station_Name')
-                selstationname.innerHTML = ""
-                const tableTag = document.createElement('tr')
-                response.data.stationname.forEach(data => {                  
-                    tableTag.innerText = data
+                const selStation = document.querySelectorAll('#station_Name tr')
+                selStation.forEach(data => {
+                    data.remove()
                 })
-                response.data.stationnum.forEach(data => {
-                    tableTag.id = data
+                response.data.station.forEach(data => {    
                     const selstationname = document.querySelector('#station_Name')
+                    const tableTag = document.createElement('tr')      
+                    tableTag.innerText = data.stationname
+                    tableTag.id = data.stationnum
                     selstationname.append(tableTag)
                 })
             })

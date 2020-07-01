@@ -5,11 +5,11 @@ from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib import messages
-from django.db.models.functions import Substr, datetime
+from django.db.models.functions import Substr
 from .models import Address, Rent, Recede, Notice, Comment
 from .forms import NoticeForm, CommentForm
 from django.core.paginator import Paginator
-import csv, sqlite3
+import datetime
 
 
 
@@ -21,10 +21,7 @@ def index(request):
     if request.user.is_authenticated:
         addresses = Address.objects.all()
         rentgu = Address.objects.values_list('rentGu', flat=True).distinct()
-        
-        print("*"*30)
-        print(rentgu)
-        print("*"*30)
+    
         # rentplace = Rent.objects.filter(rentTime=Substr('rentTime',6,7))
 
         paginator = Paginator(addresses, 100)
@@ -82,21 +79,25 @@ def charts(request):
     print("*"*40)
     print(stationNum)
     print("*"*40)
-    start_date = datetime.date(2019,11,1)
-    end_date = datetime.date(2019,11,8)
-    print(start_date, end_date)
-    print("*"*40)
-    # rentplace = Rent.objects.filter(rentTime__contains='2019-11', stationNum=stationNum).order_by('rentTime')
-    # recedeplace = Recede.objects.filter(recedeTime__contains='2019-11', restationNum=stationNum).order_by('recedeTime')
-    rentplace = Rent.objects.filter(rentTime__range=(start_date, end_date), stationNum=stationNum).order_by('rentTime')
-    recedeplace = Recede.objects.filter(recedeTime__range=(start_date, end_date), restationNum=stationNum).order_by('recedeTime')
-    print("$*"*20)
-    print(rentplace)
-    print(rentplace.count())
-    print("$*"*20)
-    print(recedeplace)
-    print(recedeplace.count())
-    print("$*"*20)
+    a = 7
+    for i in range(4):
+        if i == 3:
+            a = 9
+        start_date = datetime.date(2019,11,(i*7+1))
+        end_date = datetime.date(2019,11,i*7+a)
+        print(start_date, end_date)
+        print("*"*40)
+        # rentplace = Rent.objects.filter(rentTime__contains='2019-11', stationNum=stationNum).order_by('rentTime')
+        # recedeplace = Recede.objects.filter(recedeTime__contains='2019-11', restationNum=stationNum).order_by('recedeTime')
+        rentplace = Rent.objects.filter(rentTime__range=(start_date, end_date), stationNum=stationNum).order_by('rentTime')
+        recedeplace = Recede.objects.filter(recedeTime__range=(start_date, end_date), restationNum=stationNum).order_by('recedeTime')
+        print("$*"*20)
+        print("rentplace:")
+        print(rentplace.count())
+        print("$*"*20)
+        print("recedeplace:")
+        print(recedeplace.count())
+        print("$*"*20)
     return render(request, 'board/charts.html')
 
 def tables(request):
@@ -162,7 +163,7 @@ def update(request, notice_pk):
 @require_POST
 def delete(request, notice_pk):
     if request.user.is_authenticated:
-        notice = get_object_or_404(Article, pk=notice_pk)
+        notice = get_object_or_404(Notice, pk=notice_pk)
         if notice.user == request.user:
             notice.delete()
             return redirect('board:notice')
@@ -211,18 +212,14 @@ def search(request):
     # 중복제거
     rentdong = set(rentdong)    
  
-    stationname = []
-    stationnum = []
+    station = []
     if selecteddong != None :
         dong = Address.objects.filter(rentGu=selectedgu, rentDong=selecteddong)
-        print(dong)
         for stationdata in dong:
-            stationname.append(stationdata.stationName)
-            stationnum.append(stationdata.stationNum)
+            station.append({'stationname': stationdata.stationName, 'stationnum': stationdata.stationNum})
 
     context = {
         'rentdong' : list(rentdong),
-        'stationnum' : stationnum,
-        'stationname' : stationname,
+        'station' : station,
     }
     return JsonResponse(context)
