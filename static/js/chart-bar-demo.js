@@ -15,12 +15,12 @@ $("#indexTable").DataTable({
   info: false,
   // 페이징 기능 숨기기
   paging: false,
-  scrollY: 330
+  scrollY: 320
 });
 
 // Bar Chart Example
 const aaa = document.getElementById("myBarChart");
-Chart.defaults.global.defaultFontColor = 'blue';
+// Chart.defaults.global.defaultFontColor = 'blue';
 Chart.defaults.global.defaultFontFamily = 'Arial';
 const myBarChart = new Chart(aaa, {
   type: 'bar',
@@ -44,7 +44,10 @@ const myBarChart = new Chart(aaa, {
   options: {
     maintainAspectRatio: false,
     title: {
-      text: '주별 대여와 반납대수'
+      display: true,
+      text: '주별 대여와 반납대수',
+      fontColor : '#000000',
+      fontSize : 18,
     },
     scales: {
       xAxes: [{
@@ -83,7 +86,7 @@ const myBarChart = new Chart(aaa, {
     legend: {
       display: true,
       labels: {
-        fontColor: 'purple'
+        fontColor: 'black'
       }
     }
   }
@@ -149,6 +152,10 @@ selectedDong.addEventListener('change', function(event1) {
         selStations.forEach(selStationName =>{
             selStationName.addEventListener('click', function(event) {
                 tempname = event.target.id
+                
+                const detail = document.querySelector('#detailStationNum')
+                detail.value = tempname
+
                 axios.get(`/board/barcharts/`, {
                     "params": {
                         "stationNum" : tempname
@@ -159,8 +166,14 @@ selectedDong.addEventListener('change', function(event1) {
                     console.log(response)
                     console.log('*********datasets*********')
                     console.log(myBarChart.data.datasets)
-                    myBarChart.data.datasets[0].data = response.data.rentplacelist
                     myBarChart.data.datasets[1].data = response.data.recedeplacelist
+                    myBarChart.data.datasets[0].data = response.data.rentplacelist
+                    if(Math.max(...response.data.recedeplacelist)>Math.max(...response.data.rentplacelist)){
+                      myBarChart.options.scales.yAxes[0].ticks.max = Math.round(Math.max(...response.data.recedeplacelist)*1.1)
+                    }else{
+                      myBarChart.options.scales.yAxes[0].ticks.max = Math.round(Math.max(...response.data.rentplacelist)*1.1)
+                    }
+                    myBarChart.options.title.text = response.data.chartStationName
                     myBarChart.update()        
                 })
                 .catch(function(error) {
