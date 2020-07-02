@@ -29,15 +29,15 @@ const myBarChart = new Chart(aaa, {
     labels: ["1st week", "2nd week", "3rd week", "4th week"],
     datasets: [{
       label: "대여대수",
-      backgroundColor: "rgba(255,99,132,1)",
-      borderColor: "rgba(255,99,132,1)",
-      fill: false,
+      backgroundColor: "rgba(255, 99, 132, 1)",
+      borderColor: "rgba(255 99, 132, 1)",
+      fill: true,
       data: [],
     },{
       label: "반납대수",
       backgroundColor: "rgba(75, 192, 192, 1)",
       bordercolor: "rgba(75, 192, 192, 1)",
-      fill: false,
+      fill: true,
       data: [],
     }]
   },
@@ -53,7 +53,7 @@ const myBarChart = new Chart(aaa, {
           unit: 'week'
         },
         gridLines: {
-          display: false,
+          display: true,
           color:"black"
         },
         ticks: {
@@ -68,7 +68,7 @@ const myBarChart = new Chart(aaa, {
         ticks: {
           beginAtZero: true,
           min: 0,
-          max: 450,
+          max: 1100,
           maxTicksLimit: 20
         },
         gridLines: {
@@ -81,15 +81,13 @@ const myBarChart = new Chart(aaa, {
       }],
     },
     legend: {
-      display: false,
+      display: true,
       labels: {
         fontColor: 'purple'
       }
     }
   }
 });
-
-
 
 //select 의 id를 찾아서 정보를 가져온다.
 const selectedgu = document.querySelector('#rent_Gu')
@@ -161,8 +159,8 @@ selectedDong.addEventListener('change', function(event1) {
                     console.log(response)
                     console.log('*********datasets*********')
                     console.log(myBarChart.data.datasets)
-                    myBarChart.data.datasets[0].data = response.data.recedeplacelist
-                    myBarChart.data.datasets[1].data = response.data.rentplacelist
+                    myBarChart.data.datasets[0].data = response.data.rentplacelist
+                    myBarChart.data.datasets[1].data = response.data.recedeplacelist
                     myBarChart.update()        
                 })
                 .catch(function(error) {

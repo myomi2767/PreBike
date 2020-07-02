@@ -9,10 +9,8 @@ from django.db.models.functions import Substr
 from .models import Address, Rent, Recede, Notice, Comment
 from .forms import NoticeForm, CommentForm
 from django.core.paginator import Paginator
+from datetime import datetime
 import datetime
-
-
-
 from django.http import JsonResponse
 
 # Create your views here.
@@ -74,10 +72,14 @@ def password(request):
     return render(request, 'board/password.html')
 
 def charts(request):
-    return render(request, 'board/charts.html')
+    rentgu = Address.objects.values_list('rentGu', flat=True).distinct()
+    context = {
+        'rentgu' : rentgu
+    }
+    return render(request, 'board/charts.html', context)
 
 def barcharts(request):
-    stationNum = request.GET.get('stationNum')
+    stationNum = request.GET.get('stationNum') 
     print("*"*40)
     print(stationNum)
     print("*"*40)
@@ -91,7 +93,8 @@ def barcharts(request):
         end_date = datetime.date(2019,11,i*7+a)
         print(start_date, end_date)
         print("*"*40)
-        
+        print(type(start_date))
+
         # rentplace = Rent.objects.filter(rentTime__contains='2019-11', stationNum=stationNum).order_by('rentTime')
         # recedeplace = Recede.objects.filter(recedeTime__contains='2019-11', restationNum=stationNum).order_by('recedeTime')
         rentplace = Rent.objects.filter(rentTime__range=(start_date, end_date), stationNum=stationNum).order_by('rentTime')
@@ -103,6 +106,41 @@ def barcharts(request):
         'recedeplacelist' : recedeplacelist,
     }    
     return JsonResponse(context)
+
+def areacharts(request):
+    stationNum = request.GET.get('chart_stationNum') 
+    hour_rentplacelist = []
+    hour_recedeplacelist = []
+    print('********stationNum*********')
+    print(stationNum)
+    
+    my_date = datetime.date(2019,11,12)
+    for i in range(24):
+        # 1시간 간격일 때
+        start_time = datetime.time(i,0)
+        end_time = datetime.time(i,59)
+        # 2시간 간격일 때 for i in range(12):
+        # start_hour = datetime.hour(2*i)
+        # end_hour = datetime.hour(2*(i+i))
+        print('***********start hour|end hour************')
+        print(f"{type(start_time)}: {start_time}", f"{type(end_time)}: {end_time}")
+        my_datestarttime = datetime.datetime.combine(my_date, start_time)
+        my_dateendtime = datetime.datetime.combine(my_date, end_time)
+        print(f"{type(my_datestarttime)}: {my_datestarttime}", f"{type(my_dateendtime)}: {my_dateendtime}")
+        hour_rentplace = Rent.objects.filter(rentTime__range=(my_datestarttime, my_dateendtime), stationNum=stationNum).order_by('rentTime')
+        hour_recedeplace = Recede.objects.filter(recedeTime__range=(my_datestarttime, my_dateendtime), restationNum=stationNum).order_by('recedeTime')
+        print('**********hour_rentplace***********')
+        print(hour_rentplace.count(), ', ', hour_recedeplace.count())
+        hour_rentplacelist.append(hour_rentplace.count())
+        hour_recedeplacelist.append(hour_recedeplace.count())
+
+
+    context = {
+        'hour_rentplacelist' : hour_rentplacelist,
+        'hour_recedeplacelist' : hour_recedeplacelist,
+    }
+    return JsonResponse(context)
+
 
 def tables(request):
 
