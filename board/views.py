@@ -78,6 +78,8 @@ def charts(request):
 
 def barcharts(request):
     stationNum = request.GET.get('stationNum')
+    address = Address.objects.get(stationNum=stationNum)
+    print(address)
     print("*"*40)
     print(stationNum)
     print("*"*40)
@@ -101,6 +103,7 @@ def barcharts(request):
     context = {
         'rentplacelist' : rentplacelist,
         'recedeplacelist' : recedeplacelist,
+        'chartStationName' : address.stationName,
     }    
     return JsonResponse(context)
 
@@ -109,7 +112,7 @@ def tables(request):
     return render(request, 'board/tables.html')
 
 def notice(request):
-    notices = Notice.objects.all()
+    notices = Notice.objects.all()[::-1]
     context = {
         'notices' : notices
     }
@@ -123,11 +126,10 @@ def create(request):
             notice = form.save(commit=False)
             notice.user = request.user
             notice.save()
-            messages.success(request, '게시글 작성 완료!!!!!')
             # return redirect('articles:detail', notice.pk)
             return redirect('board:notice')
         else:
-            messages.error(request, '너 잘못된 데이터를 넣었어!!!')
+            pass
     else:
         form = NoticeForm()
     context = {
