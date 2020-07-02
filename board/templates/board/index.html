@@ -4,7 +4,7 @@
     <div id="layoutSidenav_content">
         <main>
             <div class="container-fluid">
-                <h1 class="mt-4">자전거 수요예측</h1>
+                <h1 class="mt-4">공공 자전거 수요예측</h1>
                 <ol class="breadcrumb mb-4">
                     <li class="breadcrumb-item active">Dashboard</li>
                 </ol>
@@ -57,7 +57,7 @@
                                 <i class="fas fa-chart-bar mr-1"></i>
                                 Bike Demand per Week
                             </div>
-                            <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
+                            <div class="card-body"><canvas id="myBarChart" width="100%" height="400"></canvas></div>
                         </div>
                     </div>  
                 </div>
@@ -66,7 +66,7 @@
                   <div class="card mb-4">
                       <div class="card-header">
                           <i class="fas fa-table mr-1"></i>
-                          DataTable Example
+                          따릉이 주소별 거치대수
                       </div>
                       <div class="card-body">
                           <div class="table-responsive">
@@ -97,6 +97,7 @@
                           </div>
                       </div>
                       <ul class="pagination justify-content-center">
+                          <!-- 이전 페이지 -->
                           {% if addresses.has_previous %}
                           <li class="page-item">
                               <a href="?page=1" class="page-link">&laquo;</a>
@@ -142,8 +143,5 @@
 {% endblock %}
 
 {% block scrip %}
-<script src="{% static 'js/chart-bar-demo.js' %}">
-    var myBarChart = new Chart(ctx, myLineChart);
-    myBarChart.update();
-</script>
+<script src="{% static 'js/chart-bar-demo.js' %}"></script>
 {% endblock %}

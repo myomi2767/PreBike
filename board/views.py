@@ -19,12 +19,11 @@ from django.http import JsonResponse
 def index(request):
 
     if request.user.is_authenticated:
+        # Address 모델 DB의 전체 데이터 불러오기
         addresses = Address.objects.all()
         rentgu = Address.objects.values_list('rentGu', flat=True).distinct()
-    
-        # rentplace = Rent.objects.filter(rentTime=Substr('rentTime',6,7))
-
         paginator = Paginator(addresses, 100)
+
         # 페이지 개수 범위 설정
         page_numbers_range = 10
         max_index = len(paginator.page_range)
@@ -75,6 +74,9 @@ def password(request):
     return render(request, 'board/password.html')
 
 def charts(request):
+    return render(request, 'board/charts.html')
+
+def barcharts(request):
     stationNum = request.GET.get('stationNum')
     print("*"*40)
     print(stationNum)
@@ -213,12 +215,13 @@ def search(request):
         rentdong.append(data.rentDong)
     # 중복제거
     rentdong = set(rentdong)    
- 
+    
     station = []
     if selecteddong != None :
         dong = Address.objects.filter(rentGu=selectedgu, rentDong=selecteddong)
         for stationdata in dong:
             station.append({'stationname': stationdata.stationName, 'stationnum': stationdata.stationNum})
+    
     context = {
         'rentdong' : list(rentdong),
         'station' : station,

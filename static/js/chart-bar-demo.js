@@ -4,7 +4,6 @@ Chart.defaults.global.defaultFontColor = '#292b2c';
 
 // datapass from index.html
 
-
 $("#indexTable").DataTable({
   // 표시 건수기능 숨기기
   lengthChange: false,
@@ -19,136 +18,33 @@ $("#indexTable").DataTable({
   scrollY: 330
 });
 
-//select 의 id를 찾아서 정보를 가져온다.
-const selectedgu = document.querySelector('#rent_Gu')
-console.log('***************************')
-console.log(selectedgu)
-//가져온 정보를 addeventListener를 통해 출력해준다.
-selectedgu.addEventListener('change', function(event) {
-    console.log(event.target.value)
-    temp = event.target.value
-    axios.get(`/board/search/`, {
-        "params": {
-            "rentGu" : temp
-        }
-    })
-    .then(function(response) {
-        console.log('******$$$$$$*******')
-        console.log(response);
-        const selecteddong = document.querySelector('#rent_Dong')
-        selecteddong.innerHTML=""
-        const basicOptionTag = document.createElement('option')
-        basicOptionTag.innerText = '-----동 선택-----'
-        selecteddong.append(basicOptionTag)
-        response.data.rentdong.forEach(data => {
-            const optionTag = document.createElement('option')
-            optionTag.innerText = data
-            
-            selecteddong.append(optionTag)
-        })
-        //console.log('*********########*********')
-        //console.log(response.data)
-        //selecteddong.innerText = response.data
-    })
-    .catch(function(error) {
-        console.log(error);
-    });
-})
-const selectedDong = document.querySelector('#rent_Dong')
-console.log('*********@@@@@@@@*******')
-console.log(selectedDong)
-selectedDong.addEventListener('change', function(event1) {
-    tempdong = event1.target.value
-    const selectedGu = document.querySelector('#rent_Gu').value
-    axios.get(`/board/search/`, {
-        "params": {
-            "rentGu" : selectedGu,
-            "rentDong" : tempdong,
-        }
-    })
-    .then(function(response) {
-        console.log('******%%%%%%******')
-        console.log(response);
-        const selStation = document.querySelectorAll('.station_Name tr')
-        selStation.forEach(data => {
-            data.remove()
-        })
-        response.data.station.forEach(data => {    
-            const selstationname = document.querySelector('.station_Name')
-            const trTableTag = document.createElement('tr')
-            selstationname.append(trTableTag)
-            const tableTag = document.createElement('td')
-            tableTag.innerText = data.stationname
-            tableTag.id = data.stationnum
-            trTableTag.append(tableTag)
-        })
-    })
-    .then(response => {
-        const selStations = document.querySelectorAll('.station_Name tr td')
-        selStations.forEach(selStationName =>{
-            selStationName.addEventListener('click', function(event) {
-                tempname = event.target.id
-
-                axios.get(`/board/charts/`, {
-                    "params": {
-                        "stationNum" : tempname
-                    }
-                })
-                .then(function(response) {
-                    console.log('*********!!!!!!!!*******')
-                    console.log(response)
-                    myLineChart.data.datasets.forEach(function(dataset) {
-                      dataset.data.pop();
-                    });
-                    const barChart = document.querySelectorAll('#myBarChart')
-                    response.data.rentplacelist.forEach(data =>{
-                      console.log('^^^^^^^^')
-                      console.log(data)
-                      //myLineChart.data.datasets[0].data.push(data)
-                      console.log('@@@@@@@@@')
-                      console.log(myLineChart.data.datasets[0].data)
-                      myLineChart.data.datasets[0].data.push(data)
-                      //barChart.update();
-                    })
-                    response.data.recedeplacelist.forEach(data =>{
-                      console.log('`````````')
-                      console.log(data)
-                    })
-                })
-                .catch(function(error) {
-                  console.log(error);
-              });
-                
-            })
-        })
-    })
-    .catch(function(error) {
-        console.log(error);
-    });
-})
-// <div class="card-body"><canvas id="myBarChart" width="100%" height="40"></canvas></div>
-
-
-
 // Bar Chart Example
-const ctx = document.getElementById("myBarChart");
-const myLineChart = new Chart(ctx, {
+const aaa = document.getElementById("myBarChart");
+Chart.defaults.global.defaultFontColor = 'blue';
+Chart.defaults.global.defaultFontFamily = 'Arial';
+const myBarChart = new Chart(aaa, {
   type: 'bar',
   data: {
     //labels: ["January", "February", "March", "April", "May", "June"],
     labels: ["1st week", "2nd week", "3rd week", "4th week"],
     datasets: [{
-      label: "Revenue",
-      backgroundColor: "rgba(2,117,216,1)",
-      borderColor: "rgba(2,117,216,1)",
-
-      //data: [4215, 5312, 6251, 7841, 9821, 14984],
+      label: "대여대수",
+      backgroundColor: "rgba(255,99,132,1)",
+      borderColor: "rgba(255,99,132,1)",
+      fill: false,
       data: [],
-    }],
+    },{
+      label: "반납대수",
+      backgroundColor: "rgba(75, 192, 192, 1)",
+      bordercolor: "rgba(75, 192, 192, 1)",
+      fill: false,
+      data: [],
+    }]
   },
   options: {
+    maintainAspectRatio: false,
     title: {
-      text: ''
+      text: '주별 대여와 반납대수'
     },
     scales: {
       xAxes: [{
@@ -172,8 +68,8 @@ const myLineChart = new Chart(ctx, {
         ticks: {
           beginAtZero: true,
           min: 0,
-          max: 15000,
-          maxTicksLimit: 5
+          max: 450,
+          maxTicksLimit: 20
         },
         gridLines: {
           display: true
@@ -185,8 +81,98 @@ const myLineChart = new Chart(ctx, {
       }],
     },
     legend: {
-      display: false
+      display: false,
+      labels: {
+        fontColor: 'purple'
+      }
     }
   }
 });
+
+
+
+//select 의 id를 찾아서 정보를 가져온다.
+const selectedgu = document.querySelector('#rent_Gu')
+//가져온 정보를 addeventListener를 통해 출력해준다.
+selectedgu.addEventListener('change', function(event) {
+    console.log(event.target.value)
+    temp = event.target.value
+    axios.get(`/board/search/`, {
+        "params": {
+            "rentGu" : temp
+        }
+    })
+    .then(function(response) {
+        const selecteddong = document.querySelector('#rent_Dong')
+        selecteddong.innerHTML=""
+        //기본 옵션 태그 생성
+        const basicOptionTag = document.createElement('option')
+        basicOptionTag.innerText = '-----동 선택-----'
+        //동 옵션 태그 리스트에 추가해준다.
+        selecteddong.append(basicOptionTag)
+        response.data.rentdong.forEach(data => {
+            const optionTag = document.createElement('option')
+            optionTag.innerText = data          
+            selecteddong.append(optionTag)
+        })        
+        //selecteddong.innerText = response.data
+    })
+    .catch(function(error) {
+        console.log(error);
+    });
+})
+const selectedDong = document.querySelector('#rent_Dong')
+selectedDong.addEventListener('change', function(event1) {
+    tempdong = event1.target.value
+    const selectedGu = document.querySelector('#rent_Gu').value
+    axios.get(`/board/search/`, {
+        "params": {
+            "rentGu" : selectedGu,
+            "rentDong" : tempdong,
+        }
+    })
+    .then(function(response) {
+        const selStation = document.querySelectorAll('.station_Name tr')
+        selStation.forEach(data => {
+            data.remove()
+        })
+        response.data.station.forEach(data => {    
+            const selstationname = document.querySelector('.station_Name')
+            const trTableTag = document.createElement('tr')
+            selstationname.append(trTableTag)
+            const tableTag = document.createElement('td')
+            tableTag.innerText = data.stationname
+            tableTag.id = data.stationnum
+            trTableTag.append(tableTag)
+        })
+    })
+    .then(response => {
+        const selStations = document.querySelectorAll('.station_Name tr td')
+        selStations.forEach(selStationName =>{
+            selStationName.addEventListener('click', function(event) {
+                tempname = event.target.id
+                axios.get(`/board/barcharts/`, {
+                    "params": {
+                        "stationNum" : tempname
+                    }
+                })
+                .then(function(response) {
+                    console.log('********station*********')
+                    console.log(response)
+                    console.log('*********datasets*********')
+                    console.log(myBarChart.data.datasets)
+                    myBarChart.data.datasets[0].data = response.data.recedeplacelist
+                    myBarChart.data.datasets[1].data = response.data.rentplacelist
+                    myBarChart.update()        
+                })
+                .catch(function(error) {
+                  console.log(error);
+                });
+            })
+        })
+    })
+    .catch(function(error) {
+        console.log(error);
+    });
+})
 
