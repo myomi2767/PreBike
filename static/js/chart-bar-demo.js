@@ -18,10 +18,81 @@ $("#indexTable").DataTable({
   scrollY: 330
 });
 
+// Bar Chart Example
+const aaa = document.getElementById("myBarChart");
+Chart.defaults.global.defaultFontColor = 'blue';
+Chart.defaults.global.defaultFontFamily = 'Arial';
+const myBarChart = new Chart(aaa, {
+  type: 'bar',
+  data: {
+    //labels: ["January", "February", "March", "April", "May", "June"],
+    labels: ["1st week", "2nd week", "3rd week", "4th week"],
+    datasets: [{
+      label: "대여대수",
+      backgroundColor: "rgba(255,99,132,1)",
+      borderColor: "rgba(255,99,132,1)",
+      fill: false,
+      data: [],
+    },{
+      label: "반납대수",
+      backgroundColor: "rgba(75, 192, 192, 1)",
+      bordercolor: "rgba(75, 192, 192, 1)",
+      fill: false,
+      data: [],
+    }]
+  },
+  options: {
+    maintainAspectRatio: false,
+    title: {
+      text: '주별 대여와 반납대수'
+    },
+    scales: {
+      xAxes: [{
+        time: {
+          //unit: 'month'
+          unit: 'week'
+        },
+        gridLines: {
+          display: false,
+          color:"black"
+        },
+        ticks: {
+          maxTicksLimit: 12
+        },
+        scaleLabel: {
+          display: true,
+          labelString: '주',
+        }
+      }],
+      yAxes: [{
+        ticks: {
+          beginAtZero: true,
+          min: 0,
+          max: 450,
+          maxTicksLimit: 20
+        },
+        gridLines: {
+          display: true
+        },
+        scaleLabel: {
+          display: true,
+          labelString: '대여/반납대수',
+        }
+      }],
+    },
+    legend: {
+      display: false,
+      labels: {
+        fontColor: 'purple'
+      }
+    }
+  }
+});
+
+
+
 //select 의 id를 찾아서 정보를 가져온다.
 const selectedgu = document.querySelector('#rent_Gu')
-console.log('***************************')
-console.log(selectedgu)
 //가져온 정보를 addeventListener를 통해 출력해준다.
 selectedgu.addEventListener('change', function(event) {
     console.log(event.target.value)
@@ -32,21 +103,18 @@ selectedgu.addEventListener('change', function(event) {
         }
     })
     .then(function(response) {
-        console.log('******$$$$$$*******')
-        console.log(response);
         const selecteddong = document.querySelector('#rent_Dong')
         selecteddong.innerHTML=""
+        //기본 옵션 태그 생성
         const basicOptionTag = document.createElement('option')
         basicOptionTag.innerText = '-----동 선택-----'
+        //동 옵션 태그 리스트에 추가해준다.
         selecteddong.append(basicOptionTag)
         response.data.rentdong.forEach(data => {
             const optionTag = document.createElement('option')
-            optionTag.innerText = data
-            
+            optionTag.innerText = data          
             selecteddong.append(optionTag)
-        })
-        //console.log('*********########*********')
-        //console.log(response.data)
+        })        
         //selecteddong.innerText = response.data
     })
     .catch(function(error) {
@@ -54,8 +122,6 @@ selectedgu.addEventListener('change', function(event) {
     });
 })
 const selectedDong = document.querySelector('#rent_Dong')
-console.log('*********@@@@@@@@*******')
-console.log(selectedDong)
 selectedDong.addEventListener('change', function(event1) {
     tempdong = event1.target.value
     const selectedGu = document.querySelector('#rent_Gu').value
@@ -66,8 +132,6 @@ selectedDong.addEventListener('change', function(event1) {
         }
     })
     .then(function(response) {
-        console.log('******%%%%%%******')
-        console.log(response);
         const selStation = document.querySelectorAll('.station_Name tr')
         selStation.forEach(data => {
             data.remove()
@@ -87,12 +151,23 @@ selectedDong.addEventListener('change', function(event1) {
         selStations.forEach(selStationName =>{
             selStationName.addEventListener('click', function(event) {
                 tempname = event.target.id
-
-                axios.get(`/board/charts/`, {
+                axios.get(`/board/barcharts/`, {
                     "params": {
                         "stationNum" : tempname
                     }
                 })
+                .then(function(response) {
+                    console.log('********station*********')
+                    console.log(response)
+                    console.log('*********datasets*********')
+                    console.log(myBarChart.data.datasets)
+                    myBarChart.data.datasets[0].data = response.data.recedeplacelist
+                    myBarChart.data.datasets[1].data = response.data.rentplacelist
+                    myBarChart.update()        
+                })
+                .catch(function(error) {
+                  console.log(error);
+                });
             })
         })
     })
@@ -101,53 +176,3 @@ selectedDong.addEventListener('change', function(event1) {
     });
 })
 
-
-
-// Bar Chart Example
-var ctx = document.getElementById("myBarChart");
-var myLineChart = new Chart(ctx, {
-  type: 'bar',
-  data: {
-    //labels: ["January", "February", "March", "April", "May", "June"],
-    labels: ["1st", "2nd", "3rd", "4th"],
-    datasets: [{
-      label: "Revenue",
-      backgroundColor: "rgba(2,117,216,1)",
-      borderColor: "rgba(2,117,216,1)",
-
-
-      //data: [4215, 5312, 6251, 7841, 9821, 14984],
-      data: [6251, 7841, 9821, 14984],
-    }],
-  },
-  options: {
-    scales: {
-      xAxes: [{
-        time: {
-          //unit: 'month'
-          unit: 'week'
-        },
-        gridLines: {
-          display: false,
-          color:"black"
-        },
-        ticks: {
-          maxTicksLimit: 12
-        }
-      }],
-      yAxes: [{
-        ticks: {
-          min: 0,
-          max: 15000,
-          maxTicksLimit: 5
-        },
-        gridLines: {
-          display: true
-        }
-      }],
-    },
-    legend: {
-      display: false
-    }
-  }
-});

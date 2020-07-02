@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block body %}
     <div id="layoutSidenav_content">
         <main>
@@ -60,4 +61,10 @@
             </div>
         </footer>
     </div>
+{% endblock %}
+
+{% block scrip %}
+
+<script src="{% static 'js/chart-area-demo.js' %}"></script>
+<script src="{% static 'js/chart-pie-demo.js' %}"></script>
 {% endblock %}
