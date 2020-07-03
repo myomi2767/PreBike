@@ -45,14 +45,21 @@ class Address(models.Model):
     rentGu = models.CharField(max_length=20)
     rentDong = models.CharField(max_length=20)
     stationName = models.CharField(max_length=100) 
-    stationNum = models.IntegerField(default=0)
+    stationNum = models.IntegerField(default=0, primary_key=True)
     stationValue = models.IntegerField(default=0)
+    
+    class Meta:
+        ordering = ['rentGu']
+    
     def __str__(self):
         return f'Address:{self.rentGu},{self.rentDong},{self.stationName},{self.stationNum},{self.stationValue}'
-
+    
 class Rent(models.Model):
     rentTime = models.DateTimeField()
-    stationNum = models.IntegerField(default=0)
+    stationNum = models.ForeignKey(
+        Address,
+        on_delete=models.CASCADE
+    )
     stationName = models.CharField(max_length=100)
     class Meta:
         ordering = ['rentTime']
@@ -61,12 +68,15 @@ class Rent(models.Model):
 
 class Recede(models.Model):
     recedeTime = models.DateTimeField()
-    restationNum = models.IntegerField(default=0)
-    restationName = models.CharField(max_length=100)
+    stationNum = models.ForeignKey(
+        Address,
+        on_delete=models.CASCADE
+    )
+    stationName = models.CharField(max_length=100)
     class Meta:
         ordering = ['recedeTime']
     def __str__(self):
-        return f'Recede:{self.recedeTime},{self.restationNum},{self.restationName}'
+        return f'Recede:{self.recedeTime},{self.stationNum},{self.stationName}'
 
 # 공지사항 model
 class Notice(models.Model):

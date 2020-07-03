@@ -4,7 +4,7 @@ Chart.defaults.global.defaultFontColor = '#292b2c';
 
 // datapass from index.html
 
-$("#chartTable").DataTable({
+$("#indexTable").DataTable({
   // 표시 건수기능 숨기기
   lengthChange: false,
   // 검색 기능 숨기기
@@ -19,7 +19,7 @@ $("#chartTable").DataTable({
 });
 
 // Bar Chart Example
-const aaa = document.getElementById("myBarChart");
+const aaa = document.getElementById("myindexBarChart");
 // Chart.defaults.global.defaultFontColor = 'blue';
 Chart.defaults.global.defaultFontFamily = 'Arial';
 const myBarChart = new Chart(aaa, {
@@ -92,9 +92,9 @@ const myBarChart = new Chart(aaa, {
 });
 
 //select 의 id를 찾아서 정보를 가져온다.
-const selectedgu = document.querySelector('#chart_rent_Gu')
+const index_selectedgu = document.querySelector('#index_rent_Gu')
 //가져온 정보를 addeventListener를 통해 출력해준다.
-selectedgu.addEventListener('change', function(event) {
+index_selectedgu.addEventListener('change', function(event) {
     console.log(event.target.value)
     temp = event.target.value
     axios.get(`/board/search/`, {
@@ -103,17 +103,17 @@ selectedgu.addEventListener('change', function(event) {
         }
     })
     .then(function(response) {
-        const selecteddong = document.querySelector('#chart_rent_Dong')
-        selecteddong.innerHTML=""
+        const index_selecteddong = document.querySelector('#index_rent_Dong')
+        index_selecteddong.innerHTML=""
         //기본 옵션 태그 생성
-        const basicOptionTag = document.createElement('option')
-        basicOptionTag.innerText = '-----동 선택-----'
+        const index_basicOptionTag = document.createElement('option')
+        index_basicOptionTag.innerText = '-----동 선택-----'
         //동 옵션 태그 리스트에 추가해준다.
-        selecteddong.append(basicOptionTag)
+        index_selecteddong.append(index_basicOptionTag)
         response.data.rentdong.forEach(data => {
             const optionTag = document.createElement('option')
             optionTag.innerText = data          
-            selecteddong.append(optionTag)
+            index_selecteddong.append(optionTag)
         })        
         //selecteddong.innerText = response.data
     })
@@ -121,27 +121,25 @@ selectedgu.addEventListener('change', function(event) {
         console.log(error);
     });
 })
-const selectedDong = document.querySelector('#chart_rent_Dong')
-selectedDong.addEventListener('change', function(event1) {
-    tempdong = event1.target.value
-    const selectedGu = document.querySelector('#chart_rent_Gu').value
+const index_selecteddong = document.querySelector('#index_rent_Dong')
+index_selecteddong.addEventListener('change', function(event) {
+    tempdong = event.target.value
+    const index_selectedgu = document.querySelector('#index_rent_Gu').value
     axios.get(`/board/search/`, {
         "params": {
-            "rentGu" : selectedGu,
+            "rentGu" : index_selectedgu,
             "rentDong" : tempdong,
         }
     })
     .then(function(response) {
-        const selStation = document.querySelectorAll('.station_Name tr')
-        selStation.forEach(data => {
+        const index_selStation = document.querySelectorAll('.station_Name tr')
+        index_selStation.forEach(data => {
             data.remove()
         })
-        response.data.station.forEach(data => {
-            console.log('********chart station********')
-            console.log(data)
-            const selstationname = document.querySelector('.station_Name')
+        response.data.station.forEach(data => {    
+            const index_selstationname = document.querySelector('.station_Name')
             const trTableTag = document.createElement('tr')
-            selstationname.append(trTableTag)
+            index_selstationname.append(trTableTag)
             const tableTag = document.createElement('td')
             tableTag.innerText = data.stationname
             tableTag.id = data.stationnum
@@ -149,15 +147,14 @@ selectedDong.addEventListener('change', function(event1) {
         })
     })
     .then(response => {
-        const selStations = document.querySelectorAll('.station_Name tr td')
-        selStations.forEach(selStationName =>{
+        const index_selStations = document.querySelectorAll('.station_Name tr td')
+        index_selStations.forEach(selStationName =>{
             selStationName.addEventListener('click', function(event) {
                 tempname = event.target.id
-                
-                //const detail = document.querySelector('#detailStationNum')
-                //detail.value = tempname
+                // const detail = document.querySelector('#detailStationNum')
+                // detail.value = tempname
 
-                axios.get(`/board/barcharts/`, {
+                axios.get(`/board/indexbarcharts/`, {
                     "params": {
                         "stationNum" : tempname
                     }
@@ -187,4 +184,3 @@ selectedDong.addEventListener('change', function(event1) {
         console.log(error);
     });
 })
-

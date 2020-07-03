@@ -5,23 +5,23 @@ from django.contrib.auth import login as auth_login, logout as auth_logout
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth import authenticate
 from django.contrib import messages
+from django.db.models import Count
 from django.db.models.functions import Substr
 from .models import Address, Rent, Recede, Notice, Comment
 from .forms import NoticeForm, CommentForm
 from django.core.paginator import Paginator
 from datetime import datetime
+from collections import defaultdict
 import datetime
 from django.http import JsonResponse
 
 # Create your views here.
 def index(request):
-
     if request.user.is_authenticated:
         # Address 모델 DB의 전체 데이터 불러오기
         addresses = Address.objects.all()
-        rentgu = Address.objects.values_list('rentGu', flat=True).distinct()
+        rentgu = Address.objects.values_list('rentGu', flat=True).distinct()       
         paginator = Paginator(addresses, 100)
-
         # 페이지 개수 범위 설정
         page_numbers_range = 10
         max_index = len(paginator.page_range)
@@ -73,18 +73,16 @@ def password(request):
 
 def charts(request):
     rentgu = Address.objects.values_list('rentGu', flat=True).distinct()
+    stationNum = request.GET.get('detailStationNum')
     context = {
-        'rentgu' : rentgu
+        'rentgu' : rentgu,
+        'stationNum' : stationNum,
     }
     return render(request, 'board/charts.html', context)
 
-def barcharts(request):
+def indexbarcharts(request):
     stationNum = request.GET.get('stationNum')
     address = Address.objects.get(stationNum=stationNum)
-    print(address)
-    print("*"*40)
-    print(stationNum)
-    print("*"*40)
     a = 7
     rentplacelist = []
     recedeplacelist = []
@@ -92,15 +90,36 @@ def barcharts(request):
         if i == 3:
             a = 9
         start_date = datetime.date(2019,11,(i*7+1))
-        end_date = datetime.date(2019,11,i*7+a)
-        print(start_date, end_date)
-        print("*"*40)
-        print(type(start_date))
+        print(start_date)
+        end_date = datetime.date(2019,11,i*7+a)    
+        rentplace = Rent.objects.filter(rentTime__range=(start_date, end_date), stationNum_id=stationNum)
+        print(rentplace)
+        recedeplace = Recede.objects.filter(recedeTime__range=(start_date, end_date), stationNum_id=stationNum)
+        rentplacelist.append(rentplace.count())
+        recedeplacelist.append(recedeplace.count())
+    context = {
+        'rentplacelist' : rentplacelist,
+        'recedeplacelist' : recedeplacelist,
+        'chartStationName' : address.stationName,
+    }
+    return JsonResponse(context)
 
-        # rentplace = Rent.objects.filter(rentTime__contains='2019-11', stationNum=stationNum).order_by('rentTime')
-        # recedeplace = Recede.objects.filter(recedeTime__contains='2019-11', restationNum=stationNum).order_by('recedeTime')
-        rentplace = Rent.objects.filter(rentTime__range=(start_date, end_date), stationNum=stationNum).order_by('rentTime')
-        recedeplace = Recede.objects.filter(recedeTime__range=(start_date, end_date), restationNum=stationNum).order_by('recedeTime')
+
+def barcharts(request):
+    stationNum = request.GET.get('stationNum')
+    address = Address.objects.get(stationNum=stationNum)
+    a = 7
+    rentplacelist = []
+    recedeplacelist = []
+    for i in range(4):
+        if i == 3:
+            a = 9
+        start_date = datetime.date(2019,11,(i*7+1))
+        print(start_date)
+        end_date = datetime.date(2019,11,i*7+a)    
+        rentplace = Rent.objects.filter(rentTime__range=(start_date, end_date), stationNum_id=stationNum)
+        print(rentplace)
+        recedeplace = Recede.objects.filter(recedeTime__range=(start_date, end_date), stationNum_id=stationNum)
         rentplacelist.append(rentplace.count())
         recedeplacelist.append(recedeplace.count())
     context = {
@@ -111,36 +130,34 @@ def barcharts(request):
     return JsonResponse(context)
 
 def areacharts(request):
-    stationNum = request.GET.get('chart_stationNum') 
-    hour_rentplacelist = []
-    hour_recedeplacelist = []
-    print('********stationNum*********')
-    print(stationNum)
-    
-    my_date = datetime.date(2019,11,12)
-    for i in range(24):
-        # 1시간 간격일 때
-        start_time = datetime.time(i,0)
-        end_time = datetime.time(i,59)
-        # 2시간 간격일 때 for i in range(12):
-        # start_hour = datetime.hour(2*i)
-        # end_hour = datetime.hour(2*(i+i))
-        print('***********start hour|end hour************')
-        print(f"{type(start_time)}: {start_time}", f"{type(end_time)}: {end_time}")
-        my_datestarttime = datetime.datetime.combine(my_date, start_time)
-        my_dateendtime = datetime.datetime.combine(my_date, end_time)
-        print(f"{type(my_datestarttime)}: {my_datestarttime}", f"{type(my_dateendtime)}: {my_dateendtime}")
-        hour_rentplace = Rent.objects.filter(rentTime__range=(my_datestarttime, my_dateendtime), stationNum=stationNum).order_by('rentTime')
-        hour_recedeplace = Recede.objects.filter(recedeTime__range=(my_datestarttime, my_dateendtime), restationNum=stationNum).order_by('recedeTime')
-        print('**********hour_rentplace***********')
-        print(hour_rentplace.count(), ', ', hour_recedeplace.count())
-        hour_rentplacelist.append(hour_rentplace.count())
-        hour_recedeplacelist.append(hour_recedeplace.count())
-
-
+    stationNum = request.GET.get('chart_stationNum')
+    #선택한 곳의 대여소명 가져오기
+    address = Address.objects.get(stationNum=stationNum)
+    # stationNum으로 데이터 정제
+    hour_rentplace = Rent.objects.filter(stationNum_id=stationNum)
+    hour_recedeplace = Recede.objects.filter(stationNum_id=stationNum)
+    # 대여/반납 대수 리스트 초기화
+    hour_rentplacelist = [0]*24
+    hour_recedeplacelist = [0]*24
+    # 대여 부분 코드 - 정제해온 데이터 개수만큼 반복문
+    for hourrent in hour_rentplace:
+        hour_rentplacelist[hourrent.rentTime.hour] += 1
+    # 반납 부분 코드 - 정제해온 데이터 개수만큼 반복문
+    for hourrecede in hour_recedeplace:
+        hour_recedeplacelist[hourrecede.recedeTime.hour] += 1
+    # 딕셔너리 형태로 넘겨주기
     context = {
         'hour_rentplacelist' : hour_rentplacelist,
         'hour_recedeplacelist' : hour_recedeplacelist,
+        'linechartStationName' : address.stationName,
+    }
+    return JsonResponse(context)
+
+def piecharts(request):
+    selectedgu = request.GET.get('rentGu')
+    countedDong = list(Address.objects.filter(rentGu=selectedgu).values('rentDong').annotate(rent__count=Count('rent')).order_by('-rent__count'))
+    context = {
+        'countedDong': countedDong
     }
     return JsonResponse(context)
 
@@ -250,20 +267,20 @@ def search(request):
     selecteddong = request.GET.get('rentDong')
 
     rentgu = Address.objects.filter(rentGu=selectedgu)
+
     rentdong = []
     for data in rentgu:
         rentdong.append(data.rentDong)
     # 중복제거
-    rentdong = set(rentdong)    
+    rentdong = sorted(list(set(rentdong)))
     
     station = []
     if selecteddong != None :
-        dong = Address.objects.filter(rentGu=selectedgu, rentDong=selecteddong)
+        dong = Address.objects.filter(rentGu=selectedgu, rentDong=selecteddong).order_by('stationName')
         for stationdata in dong:
             station.append({'stationname': stationdata.stationName, 'stationnum': stationdata.stationNum})
-    
     context = {
-        'rentdong' : list(rentdong),
+        'rentdong' : rentdong,
         'station' : station,
     }
     return JsonResponse(context)

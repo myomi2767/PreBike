@@ -2,29 +2,29 @@
 Chart.defaults.global.defaultFontFamily = '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
 Chart.defaults.global.defaultFontColor = '#292b2c';
 
+$("#chartindexTable").DataTable({
+  // 표시 건수기능 숨기기
+  lengthChange: false,
+  // 검색 기능 숨기기
+  searching: false,
+  // 정렬 기능 숨기기
+  ordering: false,
+  // 정보 표시 숨기기
+  info: false,
+  // 페이징 기능 숨기기
+  paging: false,
+  scrollY: 320
+});
+
 // Area Chart Example
 var ccc = document.getElementById("myAreaChart");
 var myLineChart = new Chart(ccc, {
   type: 'line',
   data: {
     labels: ["00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23" ],
-    // datasets: [{
-    //   label: "Sessions",
-    //   lineTension: 0.3,
-    //   backgroundColor: "rgba(2,117,216,0.2)",
-    //   borderColor: "rgba(2,117,216,1)",
-    //   pointRadius: 5,
-    //   pointBackgroundColor: "rgba(2,117,216,1)",
-    //   pointBorderColor: "rgba(255,255,255,0.8)",
-    //   pointHoverRadius: 5,
-    //   pointHoverBackgroundColor: "rgba(2,117,216,1)",
-    //   pointHitRadius: 50,
-    //   pointBorderWidth: 2,
-    //   data: [10000, 30162, 26263, 18394, 18287, 28682, 31274, 33259, 25849, 24159, 32651, 31984, 38451],
-    // },{
     // rgba(2,117,216,1)
     datasets: [{
-      label: "Sessions",
+      label: "시간별 대여대수",
       lineTension: 0.3,
       backgroundColor: "rgba(2,117,216,0.2)",
       borderColor: "rgba(2,117,216,1)",
@@ -35,9 +35,9 @@ var myLineChart = new Chart(ccc, {
       pointHoverBackgroundColor: "rgba(2,117,216,1)",
       pointHitRadius: 50,
       pointBorderWidth: 2,
-      data: [10000, 30162, 26263, 18394, 18287, 28682, 31274, 33259, 25849, 24159, 32651, 31984, 10000, 30162, 26263, 18394, 18287, 28682, 31274, 33259, 25849, 24159, 32651, 31984],
+      data: [],
     },{
-      label: "Sessions",
+      label: "시간별 반납대수",
       lineTension: 0.3,
       backgroundColor: "rgba(2,117,216,0.2)",
       borderColor: "rgba(255, 99, 132, 1)",
@@ -52,6 +52,13 @@ var myLineChart = new Chart(ccc, {
     }],
   },
   options: {
+    maintainAspectRatio: false,
+    title: {
+      display: true,
+      text: '시간별 대여와 반납대수',
+      fontColor : '#000000',
+      fontSize : 18,
+    },
     scales: {
       xAxes: [{
         time: {
@@ -61,13 +68,13 @@ var myLineChart = new Chart(ccc, {
           display: false
         },
         ticks: {
-          maxTicksLimit: 7
+          maxTicksLimit: 12
         }
       }],
       yAxes: [{
         ticks: {
           min: 0,
-          max: 10,
+          max: 100,
           maxTicksLimit: 5
         },
         gridLines: {
@@ -76,15 +83,18 @@ var myLineChart = new Chart(ccc, {
       }],
     },
     legend: {
-      display: false
+      display: true,
+      labels: {
+        fontColor: 'black'
+      }
     }
   }
 });
 
 //select 의 id를 찾아서 정보를 가져온다.
-const selectedgu = document.querySelector('#chart_rent_Gu')
+const line_selectedgu = document.querySelector('#chart_rent_Gu')
 //가져온 정보를 addeventListener를 통해 출력해준다.
-selectedgu.addEventListener('change', function(event) {
+line_selectedgu.addEventListener('change', function(event) {
     console.log(event.target.value)
     temp = event.target.value
     axios.get(`/board/search/`, {
@@ -111,8 +121,8 @@ selectedgu.addEventListener('change', function(event) {
         console.log(error);
     });
 })
-const selectedDong = document.querySelector('#chart_rent_Dong')
-selectedDong.addEventListener('change', function(event1) {
+const line_selectedDong = document.querySelector('#chart_rent_Dong')
+line_selectedDong.addEventListener('change', function(event1) {
     tempdong = event1.target.value
     const selectedGu = document.querySelector('#chart_rent_Gu').value
     axios.get(`/board/search/`, {
@@ -149,10 +159,22 @@ selectedDong.addEventListener('change', function(event1) {
               .then(function(response) {
                   console.log('********station*********')
                   console.log(response)
-                  console.log('*********datasets*********')
-                  console.log(myLineChart.data.datasets)
+                  rentList = []
+            
+                  // response.data.hour_rentplacelist.forEach(key => {
+                  //     console.log(key)
+                  //     rentList.push(response.data.hour_rentplacelist.get(key))
+                  // })
+                  
                   myLineChart.data.datasets[0].data = response.data.hour_rentplacelist
                   myLineChart.data.datasets[1].data = response.data.hour_recedeplacelist
+
+                  if(Math.max(...response.data.hour_recedeplacelist)>Math.max(...response.data.hour_rentplacelist)){
+                    myLineChart.options.scales.yAxes[0].ticks.max = Math.round(Math.max(...response.data.hour_recedeplacelist)*1.1)
+                  }else{
+                    myLineChart.options.scales.yAxes[0].ticks.max = Math.round(Math.max(...response.data.hour_rentplacelist)*1.1)
+                  }
+                  myLineChart.options.title.text = response.data.linechartStationName
                   myLineChart.update()        
               })
               .catch(function(error) {
@@ -166,7 +188,4 @@ selectedDong.addEventListener('change', function(event1) {
   });
 
 })
-
-
-
 
