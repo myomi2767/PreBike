@@ -27,10 +27,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '0)d1n^ej+bkyb31rd_)p*k8qv3+3pkv6ca10yi*&hmdphk7uux'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = [
+    '.compute.amazonaws.com',
+    '*',
+]
 
 # Application definition
 
@@ -133,9 +135,6 @@ STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 ) 
 # Django 배포
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+# STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-ALLOWED_HOSTS = [
-    '.compute.amazonaws.com',
-    '*',
-]
+

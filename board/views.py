@@ -286,11 +286,5 @@ def search(request):
     }
     return JsonResponse(context)
 
-def error_404(request):
+def error_404(request, exception):
     return render(request, 'board/404.html')
-
-def error_401(request):
-    return render(request, 'board/401.html')
-
-def error_500(request):
-    return render(request, 'board/500.html')
