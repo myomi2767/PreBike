@@ -153,10 +153,6 @@ selectedDong.addEventListener('change', function(event1) {
         selStations.forEach(selStationName =>{
             selStationName.addEventListener('click', function(event) {
                 tempname = event.target.id
-                
-                //const detail = document.querySelector('#detailStationNum')
-                //detail.value = tempname
-
                 axios.get(`/board/barcharts/`, {
                     "params": {
                         "stationNum" : tempname

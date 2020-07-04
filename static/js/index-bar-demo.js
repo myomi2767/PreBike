@@ -151,8 +151,9 @@ index_selecteddong.addEventListener('change', function(event) {
         index_selStations.forEach(selStationName =>{
             selStationName.addEventListener('click', function(event) {
                 tempname = event.target.id
-                // const detail = document.querySelector('#detailStationNum')
-                // detail.value = tempname
+
+                const detail = document.querySelector('#detailStationNum')
+                detail.value = tempname
 
                 axios.get(`/board/indexbarcharts/`, {
                     "params": {
