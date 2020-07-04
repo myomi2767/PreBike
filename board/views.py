@@ -73,10 +73,11 @@ def password(request):
 
 def charts(request):
     rentgu = Address.objects.values_list('rentGu', flat=True).distinct()
-    stationNum = request.GET.get('detailStationNum')
+    stationNum = request.GET.get('stationNum')
+    address = Address.objects.filter(stationNum=stationNum)
     context = {
         'rentgu' : rentgu,
-        'stationNum' : stationNum,
+        'address' : address
     }
     return render(request, 'board/charts.html', context)
 

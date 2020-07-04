@@ -4,25 +4,17 @@
     <div id="layoutSidenav_content">
         <main>
             <div class="container-fluid">
-                <h1 class="mt-4">Charts</h1>
+                <h1 class="mt-4">공공 자전거 수요예측</h1>
                 <ol class="breadcrumb mb-4">
-                    <li class="breadcrumb-item"><a href="index.html">Dashboard</a></li>
-                    <li class="breadcrumb-item active">Charts</li>
+                    <li class="breadcrumb-item active">데이터 상세보기</li>
                 </ol>
-                <div class="card mb-4">
-                    <div class="card-body">
-                        Chart.js is a third party plugin that is used to generate the charts in this template. The charts below have been customized - for further customization options, please visit the official
-                        <a target="_blank" href="https://www.chartjs.org/docs/latest/">Chart.js documentation</a>
-                        .
-                    </div>
-                </div>
                 <!--  -->
                 <div class="row">
                     <div class="col-xl-4">
                         <div class="card mb-4">
                             <div class="card-header">
                                 <div>
-                                  <i class="fas fa-table mr-1"></i>
+                                  <i class="fas fa-address-book"></i>
                                   주소선택
                                 </div>
                                 <div class="row">
@@ -30,18 +22,25 @@
                                         <select id="chart_rent_Gu" name="Gu_list" value="구" class="custom-select">
                                             <!-- 1. select의 값이 바뀌면 axios 요청을 한다. -->
                                             <option value="" selected="selected">-----구 선택-----</option>
+                                            {% if address %}
+                                              <option id="gu1" value="{{ address.0.rentGu }}" selected="selected">{{ address.0.rentGu }}</option>
+                                            {% endif %}
+                                            {% for selgu in rentgu %}
+                                              <option value="{{selgu}}">{{selgu}}</option>
+                                            {% endfor %}
                                             <!-- 요청한곳에는 변경된 select 값을 가지는 데이터들을 조회한다. -->
                                             <!-- 그 조회된 값들을 json으로 넘겨준다. -->
-                                            {% for selgu in rentgu %}
-                                                <option value="{{selgu}}">{{selgu}}</option>
-                                            {% endfor %}
                                         </select>
                                     </div>
                                     <div class="col-6">
                                         <select id="chart_rent_Dong" name="Dong_list" value="동" class="custom-select">
-                                            <option value="" selected="selected">-----동 선택-----</option>
+                                            {% if address %}
+                                              <option value="{{ address.0.rentDong }}">{{ address.0.rentDong }}</option>
+                                            {% else %}
+                                              <option value="" selected="selected">-----동 선택-----</option>
+                                            {% endif %}
                                             {% for seldong in rentdong %}
-                                                <option value="{{seldong}}">{{seldong}}</option>
+                                              <option value="{{seldong}}">{{seldong}}</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -57,7 +56,11 @@
                                   </thead>
                                   <tbody class="station_Name" id="chart_station_Name">
                                     <tr id="station_tr">
-                                      <td>{{selstationname}}</td>
+                                      {% if address %}
+                                        <td id="{{ address.0.stationNum }}">{{ address.0.stationName }}</td>
+                                      {% else %}
+                                        <td>{{selstationname}}</td>
+                                      {% endif %}
                                     </tr>
                                   </tbody>
                                 </table>
@@ -69,11 +72,10 @@
                         <div class="card mb-8">
                             <div class="card-header">
                                 <i class="fas fa-chart-area mr-1"></i>
-                                Area Chart Example
+                                시간단위 자전거 이용량
                             </div>
                             <div class="card-body">
                                 <canvas id="myAreaChart" width="100%" height="370"></canvas></div>
-                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                         </div>
                     </div>  
                 </div>
@@ -85,7 +87,6 @@
                                 Bar Chart Example
                             </div>
                             <div class="card-body"><canvas id="myBarChart" width="100%" height="400"></canvas></div>
-                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
                         </div>
                     </div>
                 </div>
@@ -97,12 +98,15 @@
                                 <div class="row">
                                     <div class="col-6">
                                         <i class="fas fa-chart-pie mr-1"></i>
-                                        Pie Chart Example
+                                        구별 자전거 이용량
                                     </div>
                                     <div class="col-6">
                                         <select id="piechart_rent_Gu" name="Gu_list" value="구" class="custom-select">
                                             <!-- 1. select의 값이 바뀌면 axios 요청을 한다. -->
                                             <option value="" selected="selected">-----구 선택-----</option>
+                                            {% if address %}
+                                              <option id="gu2" value="{{ address.0.rentGu }}" selected="selected">{{ address.0.rentGu }}</option>
+                                            {% endif %}
                                             <!-- 요청한곳에는 변경된 select 값을 가지는 데이터들을 조회한다. -->
                                             <!-- 그 조회된 값들을 json으로 넘겨준다. -->
                                             {% for selgu in rentgu %}
@@ -112,9 +116,9 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card-body"><canvas id="myPieChart" width="100%" height="60"></canvas></div>
-                            <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+                            <div class="card-body"><canvas id="myPieChart" width="100%" height="30%%"></canvas></div>
                         </div>
+                        <br><br>
                     </div>
                 </div>
             </div>
@@ -123,7 +127,84 @@
 {% endblock %}
 
 {% block scrip %}
-<script src="{% static 'js/chart-bar-demo.js' %}"></script>
+<script>
+  const num = document.querySelector('#station_tr td')
+  stNum = num.id
+  axios.get(`/board/areacharts/`, {
+      "params": {
+          "chart_stationNum" : stNum
+      }
+  })
+  .then(function(response) {
+      console.log('********station*********')
+      console.log(response)
+      rentList = []
+
+      // response.data.hour_rentplacelist.forEach(key => {
+      //     console.log(key)
+      //     rentList.push(response.data.hour_rentplacelist.get(key))
+      // })
+      
+      myLineChart.data.datasets[0].data = response.data.hour_rentplacelist
+      myLineChart.data.datasets[1].data = response.data.hour_recedeplacelist
+
+      if(Math.max(...response.data.hour_recedeplacelist)>Math.max(...response.data.hour_rentplacelist)){
+        myLineChart.options.scales.yAxes[0].ticks.max = Math.round(Math.max(...response.data.hour_recedeplacelist)*1.1)
+      }else{
+        myLineChart.options.scales.yAxes[0].ticks.max = Math.round(Math.max(...response.data.hour_rentplacelist)*1.1)
+      }
+      myLineChart.options.title.text = response.data.linechartStationName
+      myLineChart.update()        
+  })
+  .then(response => {
+    axios.get(`/board/barcharts/`, {
+      "params": {
+          "stationNum" : stNum
+      }
+    })
+    .then(function(response) {
+        console.log('********station*********')
+        console.log(response)
+        console.log('*********datasets*********')
+        console.log(myBarChart.data.datasets)
+        myBarChart.data.datasets[1].data = response.data.recedeplacelist
+        myBarChart.data.datasets[0].data = response.data.rentplacelist
+        if(Math.max(...response.data.recedeplacelist)>Math.max(...response.data.rentplacelist)){
+          myBarChart.options.scales.yAxes[0].ticks.max = Math.round(Math.max(...response.data.recedeplacelist)*1.1)
+        }else{
+          myBarChart.options.scales.yAxes[0].ticks.max = Math.round(Math.max(...response.data.rentplacelist)*1.1)
+        }
+        myBarChart.options.title.text = response.data.chartStationName
+        myBarChart.update()        
+    })
+  })
+  .catch(function(error) {
+    console.log(error);
+  });
+
+  const gu = document.querySelector('#piechart_rent_Gu')
+  stGu = gu.value
+  axios.get(`/board/piecharts/`, {
+        "params": {
+            "rentGu" : stGu
+        }
+    })
+    .then(function(response) {
+        console.log('@@@@@********@@@@@@')
+        console.log(response)
+        const dongDatasets = []
+        const countDatasets = []
+        response.data.countedDong.forEach(data => {
+          dongDatasets.push(data.rentDong)
+          countDatasets.push(data.rent__count)
+        })
+        myPieChart.data.datasets[0].data = countDatasets
+        myPieChart.data.labels = dongDatasets
+        myPieChart.update()
+    })
+</script>
+
+<!-- <script src="{% static 'js/chart-bar-demo.js' %}"></script> -->
 <script src="{% static 'js/chart-area-demo.js' %}"></script>
 <script src="{% static 'js/chart-pie-demo.js' %}"></script>
 {% endblock %}

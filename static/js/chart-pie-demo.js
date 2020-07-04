@@ -22,12 +22,19 @@ var myPieChart = new Chart(bbb, {
                       ],
     }],
   },
+  options: {
+    
+  }
 });
 
 //select 의 id를 찾아서 정보를 가져온다.
 const pie_selectedgu = document.querySelector('#piechart_rent_Gu')
 //가져온 정보를 addeventListener를 통해 출력해준다.
 pie_selectedgu.addEventListener('change', function(event) {
+    if(document.querySelector('#gu2')){
+      const presentGu2 = document.querySelector('#gu2')
+      presentGu2.remove()
+    }
     console.log('&&&&&&&&&&&')
     console.log(event.target.value)
     temp = event.target.value
