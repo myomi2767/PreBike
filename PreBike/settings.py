@@ -132,6 +132,10 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 ) 
-# get_user_model은 진짜 유저 객체를 가지고 온다.
-# AUTH_USER_MODEL은 사용자가 입력해 놓은 문자열을 가지고 온다.
-# AUTH_USER_MODEL = 'accounts.User'
+# Django 배포
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+ALLOWED_HOSTS = [
+    '.compute.amazonaws.com',
+    '*',
+]
